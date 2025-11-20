@@ -1,18 +1,24 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
-import { componentTagger } from "lovable-tagger"
 
-export default defineConfig(({ mode }) => ({
-  plugins: [
+export default defineConfig(async ({ mode }) => {
+  const plugins = [
     react({
       fastRefresh: true,
       babel: {
         plugins: []
       }
-    }),
-    mode === 'development' && componentTagger(),
-  ].filter(Boolean),
+    })
+  ];
+
+  if (mode === 'development') {
+    const { componentTagger } = await import("lovable-tagger");
+    plugins.push(componentTagger());
+  }
+
+  return {
+    plugins,
   server: {
     host: '::',
     port: 8080,
@@ -26,4 +32,4 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(import.meta.dirname || __dirname, "./src"),
     },
   }
-}))
+}})

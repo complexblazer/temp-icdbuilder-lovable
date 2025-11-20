@@ -1,0 +1,135 @@
+/* ==========================================================================
+   RESIZABLE LAYOUT COMPONENTS
+   Three-panel layout with resize handles and activity bar
+   ========================================================================== */
+
+/* Resizable Layout Container */
+.resizable-layout {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  transition: grid-template-columns 300ms ease;
+}
+
+.resizable-panel {
+  height: 100%;
+  transition: width 300ms ease;
+}
+
+.resizable-panel.collapsed {
+  width: 0 !important;
+  overflow: hidden;
+}
+
+/* Resize Handle */
+.resize-handle {
+  width: 4px;
+  background: transparent;
+  cursor: col-resize;
+  transition: background 150ms;
+  position: relative;
+  z-index: 10;
+}
+
+.resize-handle:hover,
+.resize-handle.dragging {
+  background: var(--border-strong);
+}
+
+.resize-handle::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -2px;
+  right: -2px;
+  bottom: 0;
+  cursor: col-resize;
+}
+
+/* Panel Component */
+.panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--bg-panel);
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-panel-primary);
+}
+
+.panel-collapse-btn {
+  padding: var(--spacing-xs);
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 150ms;
+}
+
+.panel-collapse-btn:hover {
+  background: var(--bg-panel-alt);
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+}
+
+.panel-content {
+  flex: 1;
+  overflow: auto;
+}
+
+/* Activity Bar */
+.activity-bar {
+  width: 48px;
+  background: var(--bg-panel);
+  border-right: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-sm) 0;
+  gap: var(--spacing-xs);
+}
+
+.activity-bar-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  position: relative;
+  transition: background 150ms;
+}
+
+.activity-bar-icon:hover {
+  background: var(--bg-panel-alt);
+}
+
+.activity-bar-icon.active {
+  background: var(--bg-panel-alt);
+}
+
+.activity-bar-icon.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  background: var(--bool-blue);
+  border-radius: 0 2px 2px 0;
+}
+
+.activity-bar-icon .icon {
+  font-size: 24px;
+  line-height: 1;
+}
