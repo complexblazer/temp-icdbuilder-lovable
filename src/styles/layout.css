@@ -29,7 +29,7 @@
 }
 
 .sidebar {
-  width: 10%;
+  width: 8%;
   max-width: 280px;
   background: var(--bg-canvas);
   display: flex;
