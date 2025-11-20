@@ -8,6 +8,7 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
+import { AppLayout } from "./components/layout/AppLayout";
 import FieldBrowser from "./components/FieldBrowser";
 import MappingTable from "./components/MappingTable";
 import CatalogTable from "./components/CatalogTable";
@@ -1069,7 +1070,9 @@ export default function App() {
 
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-      <div className="app-root">
+      <AppLayout
+        flowsPanel={
+          <div className="app-root">
         {catalogMeta && (
           <div className="catalog-status-banner">
             📁 Catalog loaded: <strong>{catalogMeta.filename}</strong> ({catalogMeta.recordCount} fields)
@@ -1698,6 +1701,10 @@ export default function App() {
           </div>
         </main>
       </div>
+        }
+        workspacePanel={<div style={{ padding: 20 }}><h2>Workspace Placeholder</h2></div>}
+        fieldsPanel={<div style={{ padding: 20 }}><h2>Fields Placeholder</h2></div>}
+      />
       <DragOverlay>
         {activeField ? (
           <div className="field-pill dragging" style={{ borderLeft: `3px solid ${getSystemColor(activeField.system)}` }}>
