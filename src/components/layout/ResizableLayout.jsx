@@ -8,13 +8,12 @@ export function ResizableLayout({
   leftPanel, 
   centerPanel, 
   rightPanel, 
-  defaultWidths = { left: 300, center: 800, right: 300 }
+  defaultWidths = { left: 300, center: 800, right: 300 },
+  collapsedPanels = { left: false, right: false },
+  onToggleLeft,
+  onToggleRight
 }) {
   const [widths, setWidths] = useState(defaultWidths);
-  const [collapsedPanels, setCollapsedPanels] = useState({
-    left: false,
-    right: false
-  });
 
   const handleLeftResize = useCallback((delta) => {
     setWidths(prev => {
@@ -31,12 +30,12 @@ export function ResizableLayout({
   }, []);
 
   const toggleLeftPanel = useCallback(() => {
-    setCollapsedPanels(prev => ({ ...prev, left: !prev.left }));
-  }, []);
+    onToggleLeft?.();
+  }, [onToggleLeft]);
 
   const toggleRightPanel = useCallback(() => {
-    setCollapsedPanels(prev => ({ ...prev, right: !prev.right }));
-  }, []);
+    onToggleRight?.();
+  }, [onToggleRight]);
 
   const leftWidth = collapsedPanels.left ? 0 : widths.left;
   const rightWidth = collapsedPanels.right ? 0 : widths.right;
