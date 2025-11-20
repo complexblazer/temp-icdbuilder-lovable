@@ -1,4 +1,4 @@
-import { FieldBrowser } from '../FieldBrowser';
+import FieldBrowser from '../FieldBrowser';
 
 export function BottomPanel({ 
   activeBrowser, 
