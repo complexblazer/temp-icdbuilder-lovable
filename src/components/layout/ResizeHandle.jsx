@@ -1,15 +1,16 @@
 import { useState, useRef, useEffect } from 'react';
 
-export function ResizeHandle({ onDrag, onDoubleClick }) {
+export function ResizeHandle({ onDrag, onDoubleClick, orientation = 'vertical' }) {
   const [isDragging, setIsDragging] = useState(false);
-  const startXRef = useRef(0);
+  const startPosRef = useRef(0);
 
   useEffect(() => {
     if (!isDragging) return;
 
     const handleMouseMove = (e) => {
-      const delta = e.clientX - startXRef.current;
-      startXRef.current = e.clientX;
+      const currentPos = orientation === 'vertical' ? e.clientX : e.clientY;
+      const delta = currentPos - startPosRef.current;
+      startPosRef.current = currentPos;
       onDrag(delta);
     };
 
@@ -24,17 +25,17 @@ export function ResizeHandle({ onDrag, onDoubleClick }) {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [isDragging, onDrag]);
+  }, [isDragging, onDrag, orientation]);
 
   const handleMouseDown = (e) => {
     e.preventDefault();
-    startXRef.current = e.clientX;
+    startPosRef.current = orientation === 'vertical' ? e.clientX : e.clientY;
     setIsDragging(true);
   };
 
   return (
     <div
-      className={`resize-handle ${isDragging ? 'dragging' : ''}`}
+      className={`resize-handle ${orientation} ${isDragging ? 'dragging' : ''}`}
       onMouseDown={handleMouseDown}
       onDoubleClick={onDoubleClick}
     />
