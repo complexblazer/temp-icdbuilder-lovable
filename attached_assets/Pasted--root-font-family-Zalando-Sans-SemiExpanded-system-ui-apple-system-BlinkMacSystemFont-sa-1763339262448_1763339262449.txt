@@ -1,0 +1,94 @@
+:root {
+  font-family: "Zalando Sans SemiExpanded", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  letter-spacing: -0.01em;
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+}
+
+/* DARK CHARCOAL */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg-canvas: #050608;
+  --bg-sidebar: #06070a;
+  --bg-panel: #0c0e11;
+  --bg-panel-primary: #101217;
+  --bg-panel-alt: #14171e;
+
+  --border-subtle: #1b1f26;
+  --border-strong: #252a33;
+  --divider: #1a1d24;
+
+  --text-primary: #f5f7fa;
+  --text-secondary: #a5b0c0;
+  --text-muted: #6c7380;
+
+  --bool-blue: #2d7ff9;
+  --bool-amber: #ffb648;
+  --bool-red: #ff5a63;
+  --bool-green: #3ccb7f;
+  --bool-purple: #b07cff;
+
+  --centric: var(--bool-amber);
+  --fulfil: var(--bool-green);
+  --salsify: var(--bool-purple);
+
+  --pill-bg: var(--bg-panel-alt);
+  --pill-border: var(--border-subtle);
+  --pill-hover-bg: #191c23;
+  --pill-hover-border: var(--border-strong);
+
+  --drop-bg: #121417;
+  --drop-hover-bg: #171a22;
+  --drop-active-bg: #1c202a;
+  --drop-border: var(--border-strong);
+  --drop-border-active: var(--bool-blue);
+
+  --btn-bg: #121822;
+  --btn-bg-hover: #18202e;
+  --btn-border: var(--border-strong);
+}
+
+/* DIRTY CREAM */
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --bg-canvas: #f4f1e6;
+  --bg-sidebar: #f0ebdd;
+  --bg-panel: #ffffff;
+  --bg-panel-primary: #ffffff;
+  --bg-panel-alt: #f7f4eb;
+
+  --border-subtle: #ded4bc;
+  --border-strong: #cfc0a0;
+  --divider: #e2d7bd;
+
+  --text-primary: #171717;
+  --text-secondary: #5b5b5b;
+  --text-muted: #8e8774;
+
+  --bool-blue: #245bce;
+  --bool-amber: #d6892f;
+  --bool-red: #cc3a3f;
+  --bool-green: #2d8f52;
+  --bool-purple: #7d51c8;
+
+  --centric: var(--bool-amber);
+  --fulfil: var(--bool-green);
+  --salsify: var(--bool-purple);
+
+  --pill-bg: #fbf7ee;
+  --pill-border: #ded4bc;
+  --pill-hover-bg: #f4ecde;
+  --pill-hover-border: #cfc0a0;
+
+  --drop-bg: #faf5ea;
+  --drop-hover-bg: #f1e8d8;
+  --drop-active-bg: #e9ddc6;
+  --drop-border: #d7c7a9;
+  --drop-border-active: var(--bool-blue);
+
+  --btn-bg: #ffffff;
+  --btn-bg-hover: #f4ecde;
+  --btn-border: #cfc0a0;
+}

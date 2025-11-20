@@ -1,0 +1,98 @@
+BOOL · ICD Builder — Packages & Save / Autosave
+
+High-Level
+
+We’re introducing a new top-level concept: Package.
+	•	Package = container for one or more Flows (e.g. “Centric → Fulfil Product”, “Fulfil → Salsify Product”).
+	•	The current “Flows” sidebar becomes a general sidebar that manages both Packages and Flows.
+	•	The environment (packages, flows, mappings) should be autosaved and restorable on reload.
+
+⸻
+
+1. Sidebar Structure
+
+1.1 New Hierarchy
+
+Current:
+	•	Flows (list)
+
+New:
+	•	Packages (collapsible section)
+	•	Package A
+	•	Flow 01
+	•	Flow 02
+	•	Package B
+	•	Flow 01
+	•	(Later: other sections can be added under this sidebar)
+
+1.2 Behavior
+	•	Packages section appears above Flows header in sidebar.
+	•	Each Package can be:
+	•	Selected (active highlight)
+	•	Renamed
+	•	Deleted
+	•	Within a Package, Flows are listed as children and:
+	•	Are selectable
+	•	Can be renamed
+	•	Can be copied/duplicated
+	•	Can be re-ordered
+
+1.3 Collapsible
+	•	Packages section is collapsible via arrow:
+	•	Clicking the arrow hides/shows package list.
+	•	Each Package is also collapsible:
+	•	Arrow next to package name toggles visibility of its flows.
+
+⸻
+
+2. Flow Metadata & Configuration
+
+Add a flow configuration menu (either a right-click menu, overflow menu ⋯, or an inline settings icon) for each flow.
+
+2.1 Flow Fields
+
+For each Flow:
+	•	Package (dropdown, required)
+	•	Values: all existing package names; option to “New package…”
+	•	Source system (dropdown, required)
+	•	Values: Centric, Fulfil, Salsify (for now)
+	•	Target system (dropdown, required)
+	•	Values: same list
+
+These fields move responsibility for system selection out of the field browser and into flow config.
+
+⸻
+
+3. Impact on Field Browser
+
+3.1 Remove System Selector from Field Browser
+
+Current: Source/Target panes each have a System dropdown.
+
+New behavior:
+	•	System dropdown is removed from both Source and Target field browsers.
+	•	System value is inferred from the active Flow:
+	•	Source Fields pane system = flow.source_system
+	•	Target Fields pane system = flow.target_system
+
+If Source system is “Centric”, Source Field browser only lists fields with system === "Centric"; same for Fulfil/Salsify on Target side.
+
+(Optional but nice): if no source/target system is set for the flow yet, show an empty state:
+
+“Set Source and Target systems in the Flow config to see fields.”
+
+⸻
+
+4. Flow Title & Subtitle
+
+In the main header area (where Flow title is shown):
+	•	Primary label: Flow Name (editable, e.g. “Flow 01” → “Centric → Fulfil Style Create”)
+	•	Secondary label / subtitle:
+SourceSystem → TargetSystem
+
+Examples:
+	•	Centric → Fulfil
+	•	Fulfil → Salsify
+
+If either system is missing, show placeholder:
+	•	Source? → Target?

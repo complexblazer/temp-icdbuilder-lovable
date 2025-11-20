@@ -1,0 +1,170 @@
+/* ==========================================================================
+   BUTTON COMPONENTS
+   Icon-only buttons with ghost variants (no borders/fills)
+   ========================================================================== */
+
+/* Base Button */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  font-size: inherit;
+  font-weight: var(--font-weight-medium);
+  line-height: 1;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  user-select: none;
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Ghost Variant (Default - Icon Only) */
+.btn-ghost {
+  background: var(--btn-ghost-bg);
+  color: var(--btn-ghost-text);
+  border: none;
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: var(--btn-ghost-bg-hover);
+  color: var(--btn-ghost-text-hover);
+}
+
+.btn-ghost:active:not(:disabled) {
+  background: var(--bg-active);
+}
+
+/* Icon Button Sizes */
+.btn-sm {
+  padding: 6px;
+  font-size: 14px;
+}
+
+.btn-md {
+  padding: var(--spacing-sm);
+  font-size: 16px;
+}
+
+.btn-lg {
+  padding: 10px;
+  font-size: 18px;
+}
+
+/* Primary Button (with subtle border, for special cases) */
+.btn-primary {
+  background: var(--btn-primary-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--btn-primary-border);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--btn-primary-bg-hover);
+  border-color: var(--border-medium);
+}
+
+/* Text-only Button (for "Add", "Cancel", etc.) */
+.btn-text {
+  background: transparent;
+  color: var(--text-secondary);
+  border: none;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: 0.9rem;
+}
+
+.btn-text:hover:not(:disabled) {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+/* Add Button (inline with items) */
+.btn-add {
+  background: transparent;
+  color: var(--text-muted);
+  border: none;
+  font-size: 0.85rem;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-add:hover:not(:disabled) {
+  color: var(--text-secondary);
+  background: var(--bg-hover);
+}
+
+/* Icon-only theme toggle */
+.theme-toggle {
+  composes: btn btn-ghost btn-md;
+  border-radius: var(--radius-md);
+}
+
+/* Delete/Danger Action */
+.btn-danger {
+  color: var(--brand-danger);
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: var(--brand-danger-bg);
+}
+
+/* Success/Confirm Action */
+.btn-success {
+  color: var(--brand-success);
+}
+
+.btn-success:hover:not(:disabled) {
+  background: var(--brand-success-bg);
+}
+
+/* Button Groups */
+.btn-group {
+  display: inline-flex;
+  gap: var(--spacing-xs);
+}
+
+.btn-group .btn {
+  border-radius: var(--radius-sm);
+}
+
+/* Toolbar Buttons (compact, minimal) */
+.btn-toolbar {
+  composes: btn btn-ghost btn-sm;
+  min-width: 28px;
+  height: 28px;
+}
+
+/* Ramp Aesthetic - Icon Button Overrides */
+/* Using !important to ensure overrides win over legacy styles */
+/* Only targets icon-only buttons, preserving all .btn variants (ghost, primary, secondary, etc.) */
+
+.icon-button,
+.theme-toggle,
+.btn-icon {
+  border: none !important;
+  background: transparent !important;
+  padding: var(--spacing-sm) !important;
+  color: var(--text-secondary) !important;
+  font-size: 1.13rem !important;
+  transition: all var(--transition-fast) !important;
+}
+
+.icon-button:hover,
+.theme-toggle:hover,
+.btn-icon:hover {
+  background: var(--btn-ghost-bg-hover) !important;
+  color: var(--color-cyan) !important;
+}
+
+/* Delete button - turns red on hover (matching sidebar pattern) */
+.icon-button[title*="Remove"]:hover,
+.icon-button[title*="Delete"]:hover,
+.icon-button.delete:hover {
+  color: var(--bool-red) !important;
+}

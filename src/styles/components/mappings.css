@@ -1,0 +1,587 @@
+/* ==========================================================================
+   MAPPINGS COMPONENTS
+   Mapping table, drop zones, inline editing
+   ========================================================================== */
+
+/* Mappings Panel */
+.mappings-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background: var(--drop-bg);
+}
+
+/* Mapper Panel Header - Matches sidebar-header alignment */
+.mapper-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: var(--spacing-md);
+  padding-inline: max(var(--spacing-xl), 2vw);
+  margin-bottom: 0;
+  flex-shrink: 0;
+  height: 5%;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-panel-header);
+}
+
+/* Mappings Header */
+.mappings-header {
+  padding: var(--spacing-xl) var(--spacing-xl);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.mappings-title {
+  font-size: 1.4rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.header-title-group {
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-md);
+}
+
+.header-title-group h1 {
+  padding-block: var(--spacing-xl);
+  padding-inline: max(var(--spacing-xl), 2vw);
+  margin: 0;
+  font-size: 2rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.breadcrumb {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: var(--font-weight-regular);
+}
+
+.show-all-toggle {
+  padding: 6px 12px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-weight: var(--font-weight-regular);
+}
+
+.show-all-toggle:hover {
+  background: var(--btn-ghost-bg-hover);
+  color: var(--text-primary);
+}
+
+.flow-name-cell {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* Mappings Table Container */
+.mappings-container {
+  flex: 1;
+  overflow: auto;
+  padding: var(--spacing-lg) var(--spacing-xl);
+}
+
+/* Mapping Table */
+.mapping-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.mapping-table th,
+.mapping-table td {
+  padding: var(--spacing-sm) var(--spacing-md);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.mapping-table th {
+  font-size: 0.85rem;
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  background: var(--bg-panel);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: var(--spacing-md);
+}
+
+.mapping-table tbody tr {
+  transition: background var(--transition-fast);
+}
+
+.mapping-table tbody tr:hover {
+  background: var(--bg-hover);
+}
+
+/* Mapping Table Inputs */
+.mapping-table input,
+.mapping-table select {
+  width: 100%;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  transition: all var(--transition-fast);
+}
+
+.mapping-table input:hover,
+.mapping-table select:hover {
+  border-color: var(--border-subtle);
+  background: var(--input-bg);
+}
+
+.mapping-table input:focus,
+.mapping-table select:focus {
+  outline: none;
+  border-color: var(--input-border-focus);
+  background: var(--input-bg);
+}
+
+/* Dropdowns - Thin, muted style matching icon buttons */
+.mapping-table select {
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  padding: 4px 6px;
+  border: none;
+  background: transparent;
+}
+
+.mapping-table select:hover {
+  color: var(--text-primary);
+  background: transparent;
+  border: none;
+}
+
+.mapping-table select:focus {
+  color: var(--text-primary);
+  outline: 1px solid var(--color-cyan);
+  outline-offset: -1px;
+  background: transparent;
+  border: none;
+}
+
+/* Checkbox Styling - Visible border with transparent background */
+.mapping-table input[type="checkbox"] {
+  width: 14px !important;
+  height: 14px !important;
+  padding: 0 !important;
+  border: 1.5px solid var(--border-medium) !important;
+  border-radius: 3px !important;
+  background: transparent !important;
+  cursor: pointer;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+}
+
+.mapping-table input[type="checkbox"]:hover {
+  border-color: var(--color-cyan) !important;
+}
+
+.mapping-table input[type="checkbox"]:focus {
+  outline: 2px solid var(--color-cyan);
+  outline-offset: 2px;
+}
+
+.mapping-table input[type="checkbox"]:checked {
+  background: var(--color-cyan) !important;
+  border-color: var(--color-cyan) !important;
+}
+
+.mapping-table input[type="checkbox"]:checked::after {
+  content: '✓';
+  display: block;
+  color: var(--on-brand-primary);
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 14px;
+}
+
+.mapping-table input[type="checkbox"]:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.mapping-table select option {
+  background: var(--bg-panel);
+  color: var(--text-primary);
+  padding: var(--spacing-sm);
+}
+
+/* Column Widths */
+.col-req {
+  width: 60px;
+  text-align: center;
+}
+
+.col-pri {
+  width: 60px;
+  text-align: center;
+}
+
+.col-field {
+  min-width: 200px;
+}
+
+.col-human-name {
+  min-width: 150px;
+}
+
+.col-transform {
+  min-width: 120px;
+}
+
+.col-notes {
+  min-width: 150px;
+}
+
+.col-status {
+  min-width: 100px;
+}
+
+/* Ramp Aesthetic - Mappings Overrides */
+/* Using !important to ensure overrides win over legacy styles */
+
+.mappings-panel {
+  border: none !important;
+}
+
+/* Mapping Table - Remove cell borders, keep subtle row separators */
+.mapping-table {
+  border: none !important;
+}
+
+.mapping-table th {
+  border-bottom: 1px solid var(--border-subtle) !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-top: none !important;
+  padding: var(--spacing-md) var(--spacing-lg) !important;
+}
+
+.mapping-table td {
+  border: none !important;
+  border-bottom: 1px solid var(--border-subtle) !important;
+  padding: var(--spacing-md) var(--spacing-lg) !important;
+}
+
+/* Table Inputs - Minimal borders */
+.mapping-table input,
+.mapping-table select {
+  border: 1px solid transparent !important;
+}
+
+.mapping-table input:hover,
+.mapping-table select:hover {
+  border-color: var(--border-subtle) !important;
+}
+
+.mapping-table input:focus,
+.mapping-table select:focus {
+  border-color: var(--border-medium) !important;
+}
+
+.col-actions {
+  width: 80px;
+  text-align: right;
+}
+
+/* Drop Zone - Subtle, minimal (Ramp aesthetic) */
+.drop-zone {
+  min-height: 48px;
+  padding: var(--spacing-md);
+  background: var(--bg-panel);
+  border-width: 1px;
+  border-style: dashed;
+  border-color: transparent;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.drop-zone:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-subtle);
+}
+
+.drop-zone.over {
+  background: var(--drop-active-bg);
+  border-color: var(--drop-border-active);
+  border-style: solid;
+}
+
+.drop-zone-text {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  user-select: none;
+}
+
+.drop-zone.over .drop-zone-text {
+  color: var(--text-secondary);
+}
+
+/* Drop Zone in Table Cell */
+td .drop-zone {
+  min-height: 36px;
+  padding: var(--spacing-sm);
+  background: transparent;
+  border-color: transparent;
+}
+
+td .drop-zone:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-subtle);
+}
+
+td .drop-zone.over {
+  background: var(--drop-active-bg);
+  border-color: var(--drop-border-active);
+}
+
+/* Field Pill in Mapping Row */
+.mapping-field-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: 6px 10px;
+  background: var(--pill-bg);
+  border: 1px solid var(--pill-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  max-width: 100%;
+}
+
+.mapping-field-pill-name {
+  font-weight: var(--font-weight-medium);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mapping-field-pill-meta {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Remove Field Button */
+.remove-field-btn {
+  padding: 4px;
+  color: var(--text-muted);
+  transition: color var(--transition-fast);
+}
+
+.remove-field-btn:hover {
+  color: var(--brand-danger);
+}
+
+/* Empty Row Placeholder */
+.empty-mapping-row {
+  opacity: 0.5;
+}
+
+.empty-mapping-row:hover {
+  opacity: 1;
+  background: var(--bg-hover);
+}
+
+/* Validation States */
+.validation-error {
+  border-color: var(--brand-danger) !important;
+}
+
+.validation-warning {
+  border-color: var(--brand-warning) !important;
+}
+
+/* Status Badge */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: var(--font-weight-medium);
+}
+
+.status-badge.status-ok {
+  background: var(--brand-success-bg);
+  color: var(--brand-success);
+}
+
+.status-badge.status-warning {
+  background: var(--brand-warning-bg);
+  color: var(--brand-warning);
+}
+
+.status-badge.status-error {
+  background: var(--brand-danger-bg);
+  color: var(--brand-danger);
+}
+
+/* Row Actions */
+.row-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.mapping-table tbody tr:hover .row-actions {
+  opacity: 1;
+}
+
+/* Drag Handle in Row */
+.row-drag-handle {
+  cursor: grab;
+  color: var(--text-muted);
+  padding: 4px;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.mapping-table tbody tr:hover .row-drag-handle {
+  opacity: 0.6;
+}
+
+.row-drag-handle:active {
+  cursor: grabbing;
+}
+
+/* Panel Structure - SCOPED TO MAPPING TABLE ONLY */
+/* Only apply to panels within .mappings-panel container to avoid conflicts with field browsers */
+.mappings-panel .panel {
+  background: var(--bg-panel);
+  border-radius: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+  min-height: 0; /* Allow flex item to shrink below content size */
+}
+
+.mappings-panel .panel-header {
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  background: var(--bg-sidebar);
+}
+
+/* Mapping Actions (in panel header) */
+.mapping-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.mapping-action-btn {
+  padding: 6px 12px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.mapping-action-btn:hover:not(:disabled) {
+  background: var(--btn-ghost-bg-hover);
+  color: var(--text-primary);
+}
+
+.mapping-action-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.mapping-action-btn.delete-all-btn:hover:not(:disabled) {
+  background: var(--btn-ghost-bg-hover);
+  color: var(--brand-danger);
+}
+
+/* Custom Badge Inline (in filled drop zone) */
+.custom-badge-inline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--badge-custom-bg);
+  border: 1px solid var(--badge-custom-border);
+  color: var(--badge-custom-text);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 3px;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin-left: 6px;
+}
+
+/* Clear Field Button (in filled drop zone) */
+.clear-field-btn {
+  margin-left: auto;
+  padding: 0 var(--spacing-xs);
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.13rem;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+  transition: all var(--transition-fast);
+}
+
+.row-drop-zone.filled:hover .clear-field-btn {
+  opacity: 1;
+}
+
+.clear-field-btn:hover {
+  color: var(--brand-danger);
+}
+
+.panel-title {
+  font-size: 1.2rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.mappings-panel .panel-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 0 40vh 0; /* Extra space at bottom for working room */
+  min-height: 0; /* Critical for flex scrolling */
+}

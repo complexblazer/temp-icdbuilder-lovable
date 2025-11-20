@@ -1,0 +1,147 @@
+Technical / Bug Feedback
+
+1. Single-Flow Limitation
+
+Problem: Current export supports only one flow_id per mapping session.
+Impact: I cannot author multiple flows in one session (all 18 flows need to be buildable in parallel).
+Requirement:
+	•	Allow multi-flow authoring.
+	•	Each flow should be collapsible, with a dedicated panel.
+	•	I should be able to toggle between flows with a sidebar or dropdown.
+	•	Export should include all flows in one CSV.
+
+⸻
+
+2. Field Type Not Loaded from CSV
+
+Problem: data_type is not populating even though present in "type" column of my fields_catalog.
+Likely Cause: Normalize logic only checks data_type key; must check the exact column name "type" or "Type".
+Requirement: Update parser to read:
+row.data_type || row.type || row.Type || row.dataType.
+
+⸻
+
+3. Missing ICD Attributes / Columns
+
+These are required for actual ICD population:
+	•	required_by_system
+	•	required_in_integration
+	•	priority_level
+
+Requirement:
+Add these as editable columns in MappingTable with dropdown presets:
+	•	Required: Yes/No
+	•	Priority: P0 / P1 / P2
+
+⸻
+
+4. System/Object Filters Not Behaving Reliably
+
+Symptoms:
+	•	First two rows in the FieldBrowser reset when clicking.
+	•	Clicking deeper rows reverts the list.
+	•	Selected system/object filters sometimes ignored.
+
+Requirement:
+Stabilize filtering logic:
+	•	Filters must narrow dataset deterministically.
+	•	Clicking a field should NOT refresh the list unless system/object actually changed.
+	•	Do not re-render source list based on current mappings.
+
+⸻
+
+5. Drag & Drop Not Working
+
+Problem: UI only supports click-to-add; DnD is non-functional.
+Impact: Critical blocker — I cannot add source/target in arbitrary order; the tool forces paired entry.
+
+Requirements:
+	•	Implement actual Drag & Drop using dnd-kit or react-beautiful-dnd.
+	•	Allow dragging a source field into mapping table without requiring target.
+	•	Allow dragging target field later into same row.
+	•	Allow dragging to reorder mappings.
+
+⸻
+
+✨ Enhancement Requests
+
+1. Ability to Author Net-New Fields
+
+Use case: fields that aren’t yet in Centric, Fulfil, or Salsify.
+Requirement:
+	•	Button: “Add custom field”
+	•	Modal captures: system, object, field, type, required, description.
+
+⸻
+
+2. Flag Fields as Required
+
+Requirement:
+	•	Add checkbox for required at the mapping row level.
+	•	Should support both:
+	•	Required by the source system
+	•	Required by the integration logic (ICD requirement)
+
+⸻
+
+3. “Human Name / Common Name” Column
+
+This is needed for readability + engineering.
+Requirement: Add editable column human_name.
+
+⸻
+
+4. Manual Reordering of Fields
+
+Requirement:
+	•	Allow up/down arrows or drag-to-reorder on mapping rows.
+	•	(Future): optional auto-sorting by:
+	•	Domain model
+	•	API call sequence
+	•	Business priority
+
+⸻
+
+5. Color Coding
+
+Improves at-a-glance scanning.
+Requirement:
+	•	Color code rows by system:
+	•	Centric = muted orange
+	•	Fulfil = green
+	•	Salsify = purple
+	•	Optionally color-coded by flow.
+
+⸻
+
+6. Field Inspector Modal
+
+Requirement:
+	•	Clicking any field (in browser or mapping table) opens a modal showing:
+	•	System
+	•	Object
+	•	Field
+	•	Description
+	•	Type
+	•	Required
+	•	Key Type (PK/FK/Ref/Enum/BusinessKey)
+	•	Allowed values (enum)
+	•	Example
+	•	Used in which flows (see #7)
+
+⸻
+
+7. “Used in Mappings” Indicator
+
+Requirement:
+	•	A badge in the browser next to fields currently used in active mapping.
+	•	E.g., “In use (Flow 08, Flow 11)”
+
+⸻
+
+8. Multi-Flow Mode
+
+After multi-flow storage is fixed, add:
+	•	Left sidebar listing flows
+	•	Toggle “View: Single Flow / All Flows”
+	•	In “All Flows” mode, merges mapping rows grouped by flow header

@@ -1,0 +1,359 @@
+/* =============================================================================
+   BOOL THEME SYSTEM - 3-LAYER TOKEN ARCHITECTURE
+   
+   Layer 1: Core tokens (in :root) - primitive values
+   Layer 2: Semantic tokens (per theme) - contextual meanings
+   Layer 3: Component tokens (in component CSS) - component-specific
+   ============================================================================= */
+
+/* =============================================================================
+   LAYER 1: CORE TOKENS (Theme-independent primitives)
+   ============================================================================= */
+:root {
+  /* Typography */
+  font-family: "Zalando Sans SemiExpanded", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  letter-spacing: -0.01em;
+  --font-family-base: "Zalando Sans SemiExpanded", system-ui, -apple-system, sans-serif;
+  --font-size-base: 8pt;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --line-height-base: 1.5;
+  --line-height-tight: 1.25;
+  --line-height-relaxed: 1.75;
+
+  /* Spacing Scale (8pt grid) */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 24px;
+  --spacing-2xl: 32px;
+  --spacing-3xl: 48px;
+
+  /* Border Radius */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 200ms ease;
+  --transition-slow: 300ms ease;
+}
+
+/* =============================================================================
+   LAYER 2: SEMANTIC TOKENS - DARK CHARCOAL THEME
+   ============================================================================= */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Background Colors */
+  --bg-canvas: #0c0e11;
+  --bg-sidebar: #121317;
+  --bg-panel: #0c0e11;
+  --bg-panel-primary: #141619;
+  --bg-panel-header: #0b0b0f;
+  --bg-panel-alt: #14171e;
+  --bg-hover: #14171e;
+  --bg-active: #191c23;
+
+  /* Border Colors */
+  --border-subtle: #1b1f26;
+  --border-medium: #252a33;
+  --border-strong: #2d3340;
+
+  /* Text Colors */
+  --text-primary: #f5f7fa;
+  --text-secondary: #a5b0c0;
+  --text-muted: #6c7380;
+  --text-placeholder: #535965;
+  --text-logo: #444d5f;
+
+  /* Brand Colors */
+  --brand-primary: #5796f4;
+  --brand-success: #a1f7c9;
+  --brand-warning: #ffc266;
+  --brand-danger: #fd8b91;
+
+  /* Brand Background Tints (10% opacity) */
+  --brand-primary-bg: rgba(87, 150, 244, 0.1);
+  --brand-success-bg: rgba(161, 247, 201, 0.1);
+  --brand-warning-bg: rgba(255, 194, 102, 0.1);
+  --brand-danger-bg: rgba(253, 139, 145, 0.1);
+
+  /* System Colors (Muted) */
+  --bool-blue: #5796f4;
+  --bool-amber: #ffc266;
+  --bool-red: #fd8b91;
+  --bool-green: #a1f7c9;
+  --bool-purple: #f49eff;
+
+  /* Integration System Colors */
+  --centric: var(--bool-blue);
+  --fulfil: var(--bool-green);
+  --salsify: var(--bool-purple);
+  --pill-centric-accent: rgb(40, 71, 226, 0.12);
+  --pill-fulfil-accent: rgb(167, 244, 138, 0.12);
+  --pill-salsify-accent: rgb(0, 196, 255, 0.12);
+
+  /* Focus & Selection */
+  --focus-ring: var(--brand-primary);
+  --selection-bg: rgba(87, 150, 244, 0.3);
+  --selection-text: var(--text-primary);
+
+  /* Sidebar States */
+  --sidebar-bg: var(--bg-sidebar);
+  --sidebar-item-hover: rgba(255, 255, 255, 0.05);
+  --sidebar-item-active: rgba(255, 255, 255, 0.08);
+  --sidebar-divider: var(--border-subtle);
+
+  /* Input States */
+  --input-bg: var(--bg-panel);
+  --input-border: var(--border-strong);
+  --input-border-hover: var(--border-medium);
+  --input-border-focus: var(--brand-primary);
+  --input-text: var(--text-primary);
+
+  /* Button States */
+  --btn-bg: #121822;
+  --btn-bg-hover: #18202e;
+  --btn-border: var(--border-strong);
+  --btn-ghost-bg: transparent;
+  --btn-ghost-text: var(--text-secondary);
+  --btn-ghost-bg-hover: rgba(255, 255, 255, 0.05);
+  --btn-ghost-text-hover: var(--text-primary);
+  --btn-primary-bg: var(--brand-primary);
+  --btn-primary-border: var(--brand-primary);
+  --btn-primary-bg-hover: #4685e8;
+
+  /* Checkbox States */
+  --checkbox-bg: transparent;
+  --checkbox-border: var(--border-strong);
+  --checkbox-border-checked: var(--brand-success);
+  --checkbox-check-color: var(--brand-success);
+
+  /* Field Pills */
+  --pill-bg: var(--bg-panel);
+  --pill-border: var(--border-subtle);
+  --pill-hover-bg: #191c23;
+  --pill-hover-border: var(--border-strong);
+
+  /* Drop Zones */
+  --drop-bg: #121417;
+  --drop-active-bg: #1c202a;
+  --drop-border: var(--border-strong);
+  --drop-border-active: var(--brand-primary);
+
+  /* Badges - Custom (bordered variant active) */
+  --badge-custom-bg: rgba(237, 231, 177, 0.12);
+  --badge-custom-border: #e8d88f;
+  --badge-custom-text: #ede7b1;
+  
+  /* Badge Variants - Custom Solid (kept for reference) */
+  --badge-custom-bg-solid: #d4c370;
+  --badge-custom-text-solid: #000000;
+  
+  /* System Badges - Source/Target (solid variant) */
+  --badge-source-bg: var(--centric);
+  --badge-source-text: #000000;
+  --badge-target-bg: var(--fulfil);
+  --badge-target-text: #000000;
+  --badge-system-bg: rgba(255, 255, 255, 0.05);
+
+  /* Banners */
+  --banner-success-bg: rgba(161, 247, 201, 0.1);
+  --banner-success-text: rgba(161, 247, 201, 0.7);
+  --banner-error-bg: rgba(253, 139, 145, 0.1);
+  --banner-error-text: rgba(253, 139, 145, 0.7);
+
+  /* On-Brand Text (high contrast text on brand backgrounds) */
+  --on-brand-success: #000000;
+  --on-brand-primary: #ffffff;
+  --on-brand-warning: #000000;
+  --on-brand-danger: #ffffff;
+
+  /* Special Colors */
+  --color-cyan: #5dc9e2;
+  --color-cyan-bg: rgba(93, 201, 226, 0.1);
+  --color-cyan-bg-hover: rgba(93, 201, 226, 0.15);
+  --color-cyan-shadow: rgba(93, 201, 226, 0.3);
+  --color-cyan-shadow-strong: rgba(93, 201, 226, 0.4);
+
+  /* Field States */
+  --field-selected-bg: #191d26;
+  --field-used-bg: rgba(161, 247, 201, 0.1);
+
+  /* Drop Zone States */
+  --drop-zone-active-border: var(--brand-primary);
+  --drop-zone-active-bg: rgba(87, 150, 244, 0.1);
+  --drop-zone-active-shadow: rgba(87, 150, 244, 0.3);
+  --drop-zone-active-shadow-strong: rgba(87, 150, 244, 0.4);
+
+  /* Status Colors (alternative palette for mapping statuses) */
+  --status-success-bg: rgba(161, 247, 201, 0.1);
+  --status-success-text: #a1f7c9;
+  --status-warning-bg: rgba(255, 194, 102, 0.08);
+  --status-warning-text: #ffc266;
+  --status-error-bg: rgba(253, 139, 145, 0.1);
+  --status-error-text: #fd8b91;
+}
+
+/* =============================================================================
+   LAYER 2: SEMANTIC TOKENS - LIGHT THEME (Sleek White & Gray)
+   ============================================================================= */
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  /* Background Colors */
+  --bg-canvas: #f8f9fb;
+  --bg-sidebar: #f5f6f8;
+  --bg-panel: #f8f9fb;
+  --bg-panel-primary: #ffffff;
+  --bg-panel-header: #ecedef;
+  --bg-panel-alt: #f0f2f5;
+  --bg-hover: #f0f2f5;
+  --bg-active: #e8eaed;
+
+  /* Border Colors */
+  --border-subtle: #d4d6db;
+  --border-medium: #bfc2c9;
+  --border-strong: #a8acb5;
+
+  /* Text Colors */
+  --text-primary: #0a0b0d;
+  --text-secondary: #4a5163;
+  --text-muted: #6c7483;
+  --text-placeholder: #9ca3b0;
+
+  /* Brand Colors */
+  --brand-primary: #245bce;
+  --brand-success: #2d8f52;
+  --brand-warning: #d6892f;
+  --brand-danger: #cc3a3f;
+
+  /* Brand Background Tints (10% opacity) */
+  --brand-primary-bg: rgba(36, 91, 206, 0.1);
+  --brand-success-bg: rgba(45, 143, 82, 0.1);
+  --brand-warning-bg: rgba(214, 137, 47, 0.1);
+  --brand-danger-bg: rgba(204, 58, 63, 0.1);
+
+  /* System Colors (Muted) */
+  --bool-blue: #148eff;
+  --bool-amber: #ffee33;
+  --bool-red: #cc3a3f;
+  --bool-green: #17cf4e;
+  --bool-purple: #f44e5e;
+
+  /* Integration System Colors */
+  --centric: var(--bool-blue);
+  --fulfil: var(--bool-green);
+  --salsify: var(--bool-purple);
+  --pill-centric-accent: rgb(45, 75, 225, 0.12);
+  --pill-fulfil-accent: rgb(167, 244, 138, 0.12);
+  --pill-salsify-accent: rgb(0, 196, 255, 0.12);
+
+  /* Focus & Selection */
+  --focus-ring: var(--brand-primary);
+  --selection-bg: rgba(36, 91, 206, 0.25);
+  --selection-text: var(--text-primary);
+
+  /* Sidebar States */
+  --sidebar-bg: var(--bg-sidebar);
+  --sidebar-item-hover: rgba(0, 0, 0, 0.06);
+  --sidebar-item-active: rgba(0, 0, 0, 0.12);
+  --sidebar-divider: #c5c8cf;
+
+  /* Input States */
+  --input-bg: var(--bg-panel);
+  --input-border: var(--border-strong);
+  --input-border-hover: var(--border-medium);
+  --input-border-focus: var(--brand-primary);
+  --input-text: var(--text-primary);
+
+  /* Button States */
+  --btn-bg: #ffffff;
+  --btn-bg-hover: #f0f2f5;
+  --btn-border: var(--border-strong);
+  --btn-ghost-bg: transparent;
+  --btn-ghost-text: var(--text-secondary);
+  --btn-ghost-bg-hover: rgba(0, 0, 0, 0.04);
+  --btn-ghost-text-hover: var(--text-primary);
+  --btn-primary-bg: var(--brand-primary);
+  --btn-primary-border: var(--brand-primary);
+  --btn-primary-bg-hover: #1d4ab8;
+
+  /* Checkbox States */
+  --checkbox-bg: transparent;
+  --checkbox-border: var(--border-strong);
+  --checkbox-border-checked: var(--brand-success);
+  --checkbox-check-color: var(--brand-success);
+
+  /* Field Pills */
+  --pill-bg: #fafbfc;
+  --pill-border: #c5c8cf;
+  --pill-hover-bg: #f0f2f5;
+  --pill-hover-border: #a8acb5;
+
+  /* Drop Zones */
+  --drop-bg: #fafbfc;
+  --drop-active-bg: #e8eaed;
+  --drop-border: var(--border-medium);
+  --drop-border-active: var(--brand-primary);
+
+  /* Badges - Custom (bordered variant active) */
+  --badge-custom-bg: rgba(218, 165, 32, 0.15);
+  --badge-custom-border: #c9940d;
+  --badge-custom-text: #b8860b;
+  
+  /* Badge Variants - Custom Solid (kept for reference) */
+  --badge-custom-bg-solid: #daa520;
+  --badge-custom-text-solid: #000000;
+  
+  /* System Badges - Source/Target (solid variant) */
+  --badge-source-bg: var(--centric);
+  --badge-source-text: #000000;
+  --badge-target-bg: var(--fulfil);
+  --badge-target-text: #000000;
+  --badge-system-bg: rgba(0, 0, 0, 0.06);
+
+  /* Banners */
+  --banner-success-bg: rgba(45, 143, 82, 0.1);
+  --banner-success-text: rgba(45, 143, 82, 0.9);
+  --banner-error-bg: rgba(204, 58, 63, 0.1);
+  --banner-error-text: rgba(204, 58, 63, 0.9);
+
+  /* On-Brand Text (high contrast text on brand backgrounds) */
+  --on-brand-success: #ffffff;
+  --on-brand-primary: #ffffff;
+  --on-brand-warning: #000000;
+  --on-brand-danger: #ffffff;
+
+  /* Special Colors */
+  --color-cyan: #0891b2;
+  --color-cyan-bg: rgba(8, 145, 178, 0.1);
+  --color-cyan-bg-hover: rgba(8, 145, 178, 0.15);
+  --color-cyan-shadow: rgba(8, 145, 178, 0.3);
+  --color-cyan-shadow-strong: rgba(8, 145, 178, 0.4);
+
+  /* Field States */
+  --field-selected-bg: #e8eaed;
+  --field-used-bg: rgba(45, 143, 82, 0.1);
+
+  /* Drop Zone States */
+  --drop-zone-active-border: var(--brand-primary);
+  --drop-zone-active-bg: rgba(36, 91, 206, 0.1);
+  --drop-zone-active-shadow: rgba(36, 91, 206, 0.3);
+  --drop-zone-active-shadow-strong: rgba(36, 91, 206, 0.4);
+
+  /* Status Colors (alternative palette for mapping statuses) */
+  --status-success-bg: rgba(45, 143, 82, 0.1);
+  --status-success-text: #2d8f52;
+  --status-warning-bg: rgba(214, 137, 47, 0.08);
+  --status-warning-text: #d6892f;
+  --status-error-bg: rgba(204, 58, 63, 0.1);
+  --status-error-text: #cc3a3f;
+}

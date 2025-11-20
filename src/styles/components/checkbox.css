@@ -1,0 +1,96 @@
+/* ==========================================================================
+   CHECKBOX COMPONENTS
+   Border-only style with transparent background
+   ========================================================================== */
+
+/* Custom Checkbox Container */
+.checkbox-container {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Hide Native Checkbox */
+.checkbox-container input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* Custom Checkbox Box - Circular */
+.checkbox-box {
+  position: relative;
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid var(--checkbox-border);
+  border-radius: 50%;
+  background: transparent;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+/* Hover State */
+.checkbox-container:hover .checkbox-box {
+  border-color: var(--checkbox-border-checked);
+}
+
+/* Checked State - Filled Circle */
+.checkbox-container input[type="checkbox"]:checked + .checkbox-box {
+  border-color: var(--checkbox-border-checked);
+  background: var(--checkbox-border-checked);
+}
+
+/* No Checkmark Icon for Circular Style */
+.checkbox-container input[type="checkbox"]:checked + .checkbox-box::after {
+  display: none;
+}
+
+/* Focus State */
+.checkbox-container input[type="checkbox"]:focus-visible + .checkbox-box {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* Disabled State */
+.checkbox-container input[type="checkbox"]:disabled + .checkbox-box {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.checkbox-container input[type="checkbox"]:disabled {
+  cursor: not-allowed;
+}
+
+/* Checkbox Label */
+.checkbox-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1;
+}
+
+/* Multi-select Mode Checkbox (in field browser) */
+/* Checkbox replaces drag handle position */
+.field-checkbox {
+  flex-shrink: 0;
+  width: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.field-checkbox .checkbox-box {
+  width: 14px;
+  height: 14px;
+}
+
+/* Selected Field State (green highlight when checked) */
+.field-pill-selected .checkbox-box {
+  border-color: var(--brand-success);
+}
+
+.field-pill-selected .checkbox-container input[type="checkbox"]:checked + .checkbox-box::after {
+  border-color: var(--brand-success);
+}

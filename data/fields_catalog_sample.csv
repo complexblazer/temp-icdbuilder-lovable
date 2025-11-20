@@ -1,0 +1,21 @@
+system,object,field,data_type,required,key_type,description
+Centric,Product,product_id,string,yes,PK,Primary identifier for product
+Centric,Product,product_name,string,yes,,Product display name
+Centric,Product,default_color,string,no,,Default color code
+Centric,Product,season,string,yes,,Season code
+Centric,Product,category,string,yes,,Product category
+Fulfil,Item,item_id,string,yes,PK,Item unique identifier
+Fulfil,Item,name,string,yes,,Item name
+Fulfil,Item,attributes.Color,string,no,,Color attribute
+Fulfil,Item,season_code,string,no,,Season identifier
+Fulfil,Item,product_category,string,yes,,Category classification
+Salsify,Asset,asset_id,string,yes,PK,Asset identifier
+Salsify,Asset,title,string,yes,,Asset title
+Salsify,Asset,color_family,string,no,,Color family classification
+Salsify,Asset,tags,array,no,,Asset tags
+Centric,Style,style_id,string,yes,PK,Style identifier
+Centric,Style,style_number,string,yes,,Style number
+Centric,Style,fabric_type,string,no,,Fabric type description
+Fulfil,Product,sku,string,yes,PK,Stock keeping unit
+Fulfil,Product,description,string,no,,Product description
+Fulfil,Product,unit_price,number,yes,,Unit price

@@ -1,0 +1,96 @@
+1. What’s actually happening
+	•	Before:
+	•	One big CSS blob. Easy to change anything, hard to stay consistent.
+	•	Now:
+	•	Core + semantic + component tokens are real.
+	•	Component CSS is mostly wired to var(--…).
+	•	Any change forces questions like:
+	•	“Is this a new token?”
+	•	“Is this semantic or component?”
+	•	“Dark and light variants?”
+
+That’s great for a design system team. It’s annoying when you’re just trying to get the BOOL UI Builder to a usable v1.
+
+So: we keep the structure, but we loosen how strict we are about “doing it the perfect way” right now.
+
+⸻
+
+2. New ground rules (to make future CSS requests easy again)
+
+If you give these to the Replit agent, they’ll stop over-engineering every change:
+
+CSS Governance Rules for Now (Pragmatic Mode)
+	1.	Do NOT re-architect the token model again.
+The current theme.css is “good enough.” No more new token layers, no renaming sprees.
+	2.	Default: make changes at the component layer.
+	•	If a change is specific to one component (mappings, sidebar, field-pill, button, checkbox), update the corresponding *.css file using existing tokens.
+	•	Don’t invent new tokens unless you have to.
+	3.	Only add a new token when:
+	•	We’re reusing that value in 3+ places, or
+	•	It affects dark vs light theme behavior (e.g. hover surfaces).
+	•	When you do add one, put it in theme.css and don’t touch the structure.
+	4.	No more override layers.
+	•	ramp-overrides.css should be treated as “visual notes” to be baked into components, then removed. No new !important overrides.
+	5.	When in doubt, prioritize speed + clarity over purity.
+	•	It’s OK if a component uses var(--bg-panel-alt) directly instead of a perfectly named --navbar-surface semantic token for now.
+
+With those rules, your future asks can be simple again:
+
+“In mappings.css, lighten the row divider and mute the status badge color using existing tokens—don’t add new tokens.”
+
+⸻
+
+3. How to simplify your mental model
+
+You can think of the system like this (much simpler than “three layers”):
+	•	theme.css = palette + general behaviors
+	•	Backgrounds, text colors, borders, hover/active, brand/system colors, focus ring, spacing, radius.
+	•	Dark vs light.
+	•	component CSS = how each block uses the palette
+	•	Sidebar, mappings, field browser, button, checkbox, etc.
+
+You don’t actually need to think “core vs semantic vs component” every time. Just:
+	•	“If it’s a color/spacing value → it should be a variable that already exists in theme.css.”
+	•	“If I’m changing layout/structure → it lives in the component file.”
+
+That’s it.
+
+⸻
+
+4. Concrete triage plan (so this stops feeling heavy)
+
+If you want to really un-stress this:
+	1.	Lock theme.css for now.
+	•	Treat it as “frozen” except for small numeric tweaks (like adjusting a shade).
+	•	Don’t let the agent rename tokens or add new categories.
+	2.	Declare a short list of “approved tokens” to use a lot
+	•	Backgrounds: --bg-canvas, --bg-sidebar, --bg-panel, --bg-panel-alt
+	•	Borders: --border-subtle, --border-strong
+	•	Text: --text-primary, --text-secondary, --text-muted
+	•	Actions: --brand-primary, --bg-hover, --bg-active, --focus-ring
+	•	Status/system: --brand-success, --brand-danger, --centric, --fulfil, --salsify
+	•	That’s enough to style 95% of the app.
+	3.	Route all new visual asks like this:
+	•	“Where does this live?” → pick the *.css file.
+	•	“Which 1–2 tokens am I allowed to use for this?” → pick from the approved list.
+	•	Implement there. No new tokens, no new files.
+
+⸻
+
+5. If you want, we can do a “reset & lock” pass
+
+If you’d like to really get your footing back, next time we touch CSS we can:
+	•	Do one sweep to:
+	•	Remove ramp-overrides completely by baking its rules into components.
+	•	Ensure no duplicate :root declarations, no raw hex codes left.
+	•	Trim any obviously redundant tokens.
+	•	Then write a two-page “BOOL UI System v1.0” doc:
+	•	“These are the only tokens we care about for now.”
+	•	“These are the files to touch for each part of the UI.”
+	•	“These are 5 rules for the Replit agent to follow.”
+
+After that, your future requests can go back to sounding like:
+
+“Sidebar header and mappings header should align; fix in layout/sidebar CSS only, don’t add tokens.”
+
+—and they won’t turn it into another architecture project.

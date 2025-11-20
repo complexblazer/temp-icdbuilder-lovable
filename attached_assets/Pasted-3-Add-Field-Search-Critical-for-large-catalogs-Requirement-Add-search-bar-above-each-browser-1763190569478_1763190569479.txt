@@ -1,0 +1,133 @@
+3. Add Field Search
+
+Critical for large catalogs.
+
+Requirement:
+	•	Add search bar above each browser pane.
+	•	Search filters:
+	•	Field name
+	•	Object
+	•	Description
+	•	System (optional)
+	•	Search should combine with system/object filters, not disable them.
+
+⸻
+
+4. Sticky Headers for All Major Sections
+
+Problem: Headers disappear when scrolling, breaking navigation context.
+Requirement:
+Make the following fixed:
+	•	App header
+	•	Flows header / sidebar
+	•	Source Fields header
+	•	Mappings header
+	•	Target Fields header
+
+Use CSS position: sticky; top: Xpx; z-index: high.
+
+⸻
+
+5. Layout Adjustment — Mappings Should Be the Center Focus
+
+Problem: Mappings panel is too narrow, browsers too wide.
+Requirement:
+	•	Reduce browser pane widths to ~25% each
+	•	Increase mappings container to ~50%
+	•	Increase flows sidebar width (10–15% → ~20%)
+	•	Add responsive logic so center always dominates focus.
+
+⸻
+
+6. Need ability to Save Progress (Local or Cloud)
+
+This is essential for a real ICD workflow.
+
+Requirement:
+Implement Save / Load:
+
+Minimum viable:
+	•	Save to browser localStorage:
+	•	all flows
+	•	all mappings
+	•	field selections
+	•	Load automatically on open
+	•	Add explicit “Save” and “Reset Workspace” buttons
+
+Ideal future:
+	•	Import/Export .json workspace file
+	•	Sync to backend or GitHub Gist, but MVP is local.
+
+⸻
+
+7. Drag & Drop Still Not Working
+
+Huge blocker — DnD is fundamental to workflow.
+
+Requirement:
+Replace or properly implement DnD using:
+
+Preferred:
+
+dnd-kit (actively maintained)
+
+Behavior:
+	•	Drag source field → create mapping row
+	•	Drag target field → complete mapping row
+	•	Drag mapping rows → reorder
+	•	Drop onto empty space → create new row
+
+Notes:
+
+Clicking to add should remain optional fallback, not primary method.
+
+⸻
+
+✨ Enhancements (Strongly Recommended)
+
+8. Flow organization improvements
+	•	Add icons for copy, rename, delete
+	•	Collapsible flow sections in the mapping grid
+	•	Flow-filters: “Show only this flow” / “Show all flows”
+
+⸻
+
+9. Pill visual hierarchy
+
+To match feedback from Round 1 + new font:
+	•	Field name: bold, slightly tighter line-height
+	•	Meta: smaller, dimmer, horizontally aligned
+
+No visual noise.
+
+⸻
+
+10. Add keyboard navigation
+	•	Arrow keys move between pills
+	•	Enter adds field
+	•	Cmd/Ctrl + F focuses search bar
+
+⸻
+
+🎨 Cosmetic (Light but High-Impact)
+	1.	Header typography should use Zalando Sans with wide tracking per theme spec.
+	2.	Decrease rounding further (1–2px or full square).
+	3.	Increase spacing in the mapping table (more breathable).
+	4.	Field pill hover state should flatten and shift borders, not glow.
+
+⸻
+
+📌 Summary for Engineering
+
+Critical Fixes
+	•	Flow rename
+	•	DnD functional
+	•	Sticky headers
+	•	Field search
+	•	Stable field display hierarchy
+	•	Save/load workspace
+
+Experience Enhancements
+	•	Layout rebalance
+	•	Improved pill design
+	•	Keyboard accessibility

@@ -1,0 +1,620 @@
+/* ==========================================================================
+   FIELD BROWSER COMPONENTS
+   Field pills, search, filters with muted system colors
+   ========================================================================== */
+
+/* ==========================================================================
+   PANEL STRUCTURE (Field Browsers)
+   Visual parity with sidebar-nav-item for consistent navigation appearance.
+   Architecturally separate to preserve FieldBrowser component encapsulation.
+   
+   Future Enhancement: Option 4 - Headless FieldBrowser Pattern
+   - Extract useFieldBrowser hook (state/logic)
+   - Create FieldBrowserBody component (rendering)
+   - Allow full composability (modals, split views, custom headers)
+   - Enables reuse across module suite without FieldBrowser constraints
+   See: src/styles/README.md "Future Enhancements" section
+   ========================================================================== */
+
+/* Panel Container */
+.panel {
+  background: var(--bg-sidebar);
+  border-radius: 0;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin-bottom: 0; /* No spacing between field browser items */
+}
+
+/* Panel Header - Mimic sidebar-nav-item for visual consistency */
+.panel-header {
+  /* Match sidebar-nav-item layout exactly */
+  padding: var(--spacing-sm) var(--spacing-xl);
+  padding-left: calc(var(--spacing-md) + var(--spacing-lg)); /* Indented */
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: 2px;
+  border: none;
+  background: var(--bg-sidebar);
+  width: 100%;
+  
+  /* Match sidebar-nav-item typography */
+  font-size: 1.03rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  line-height: var(--line-height-tight);
+}
+
+.panel-header:hover {
+  background: var(--sidebar-item-hover);
+  color: var(--text-primary);
+}
+
+.panel-header h3 {
+  margin: 0;
+  font-size: 1.03rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: inherit;
+}
+
+/* Chevron Icon */
+.nav-chevron {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  width: 16px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* System Badge */
+.system-badge {
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-panel);
+  color: var(--text-muted);
+  margin-left: auto;
+}
+
+/* Panel Body */
+.panel-body {
+  padding: var(--spacing-sm);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  overflow: hidden;
+}
+
+/* Panel Content (for custom fields nested structure) */
+.panel-content {
+  padding: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+/* Collapsed State */
+.panel.collapsed .panel-header {
+  border-bottom: none;
+}
+
+.panel.collapsed {
+  flex-shrink: 0;
+}
+
+.panel.collapsed .panel-body {
+  display: none;
+}
+
+/* Field Browser Container */
+.field-browser {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Field Browser Header */
+.field-browser-header {
+  padding: var(--spacing-xs) var(--spacing-md);
+  padding-left: calc(var(--spacing-md) + var(--spacing-lg)); /* Indented */
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: 2px;
+  border: none;
+  background: var(--bg-sidebar);
+}
+
+/* Field Controls Container */
+.field-controls {
+  padding: 0 var(--spacing-md); /* Match flow-config-panel padding */
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.field-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 0;
+  font-size: 1.13rem;
+  width: 100%;
+}
+
+.field-row label {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.field-row select {
+  background: transparent;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.field-row select:hover {
+  border-color: var(--border-subtle);
+  background: var(--input-bg);
+}
+
+.field-row select:focus {
+  outline: none;
+  border-color: var(--input-border-focus);
+  background: var(--input-bg);
+}
+
+.field-row select option {
+  background: var(--bg-panel);
+  color: var(--text-primary);
+  padding: var(--spacing-sm);
+}
+
+.field-row input {
+  background: var(--bg-panel);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--btn-border);
+  padding: 5px 8px;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+.field-row input:focus {
+  outline: none;
+  border-color: var(--input-border-focus);
+}
+
+/* Field Toolbar (action buttons row) */
+.field-toolbar {
+  flex-direction: row;
+  gap: var(--spacing-xs);
+  justify-content: flex-start;
+}
+
+/* Field Action Buttons (Show All, Multi-select) */
+.field-action-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px 8px;
+  font-size: 0.85rem;
+  line-height: 1;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  font-weight: var(--font-weight-regular);
+  white-space: nowrap;
+}
+
+.field-action-btn:hover {
+  background: var(--btn-ghost-bg-hover);
+  color: var(--text-primary);
+}
+
+.field-action-btn.active {
+  background: var(--btn-ghost-bg-hover);
+  color: var(--text-primary);
+}
+
+/* Search Input */
+.search-input {
+  width: 100%;
+  background: var(--bg-panel);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--btn-border);
+  padding: 5px 8px;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.search-input:focus {
+  border-color: var(--input-border-focus);
+}
+
+.search-input::placeholder {
+  color: var(--text-muted);
+}
+
+/* Search Input (legacy class) */
+.field-search {
+  position: relative;
+}
+
+.field-search input {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius-sm);
+  color: var(--input-text);
+  font-size: 0.95rem;
+  transition: border-color var(--transition-fast);
+}
+
+.field-search input:focus {
+  outline: none;
+  border-color: var(--input-border-focus);
+}
+
+/* Filter Options */
+.field-filters {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.field-filter-label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Field List Container */
+.field-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-md) var(--spacing-lg);
+}
+
+/* Field Pills Stack */
+.field-pills-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Field Pill */
+.field-pill {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 10px var(--spacing-md);
+  background: var(--pill-bg);
+  border: 1px solid var(--pill-border);
+  border-radius: var(--radius-sm);
+  cursor: grab;
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+
+.field-pill:hover {
+  background: var(--pill-hover-bg);
+  border-color: var(--pill-hover-border);
+}
+
+.field-pill:active {
+  cursor: grabbing;
+}
+
+.field-pill.dragging {
+  opacity: 0.4;
+  cursor: grabbing;
+}
+
+/* Field Pill - Selected State (multi-select mode) */
+.field-pill.selected {
+  background: var(--brand-success-bg);
+  border-color: var(--brand-success);
+}
+
+/* Field Pill - Used in Mapping Indicator */
+.field-pill.used-in-mapping::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+
+/* Field Pill Drag Handle */
+.field-pill-drag-handle {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  opacity: 0.5;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  background: transparent;
+}
+
+.field-pill:hover .field-pill-drag-handle:not(.is-disabled) {
+  opacity: 1;
+  background: var(--btn-ghost-bg-hover);
+  color: var(--text-primary);
+}
+
+.field-pill-drag-handle.is-disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* Field Pill Trailing Slot (for checkbox) */
+.field-pill-trailing {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  visibility: hidden;
+}
+
+.field-pill-trailing.visible {
+  visibility: visible;
+}
+
+/* Field Pill Content */
+.field-pill-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+}
+
+/* Field Pill Name */
+.field-pill-name {
+  font-size: 1.03rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Field Pill Metadata */
+.field-pill-meta {
+  font-size: 0.94rem;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* System Color Accent (Very Muted) */
+.field-pill[data-system="Centric"] {
+  border-left: 3px solid transparent;
+  background: linear-gradient(
+    to right,
+    var(--pill-centric-accent) 0%,
+    var(--pill-bg) 40%
+  );
+}
+
+.field-pill[data-system="Fulfil"] {
+  border-left: 3px solid transparent;
+  background: linear-gradient(
+    to right,
+    var(--pill-fulfil-accent) 0%,
+    var(--pill-bg) 40%
+  );
+}
+
+.field-pill[data-system="Salsify"] {
+  border-left: 3px solid transparent;
+  background: linear-gradient(
+    to right,
+    var(--pill-salsify-accent) 0%,
+    var(--pill-bg) 40%
+  );
+}
+
+/* System Badge (subtle) */
+.system-badge {
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: var(--radius-xs);
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.system-badge[data-system="Centric"] {
+  background: var(--pill-centric-accent);
+  color: var(--centric);
+}
+
+.system-badge[data-system="Fulfil"] {
+  background: var(--pill-fulfil-accent);
+  color: var(--fulfil);
+}
+
+.system-badge[data-system="Salsify"] {
+  background: var(--pill-salsify-accent);
+  color: var(--salsify);
+}
+
+/* Custom Field Badge */
+.custom-field-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  background: var(--badge-custom-bg);
+  border: 1px solid var(--badge-custom-border);
+  border-radius: var(--radius-xs);
+  font-size: 0.7rem;
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--badge-custom-text);
+}
+
+/* Multi-Select Mode Buttons */
+.multi-select-actions {
+  padding: var(--spacing-sm) var(--spacing-md);
+  display: flex;
+  gap: var(--spacing-sm);
+  border-top: 1px solid var(--border-subtle);
+  background: var(--bg-panel);
+}
+
+/* Panel Collapse State */
+.panel.collapsed .field-browser-header,
+.panel.collapsed .field-list,
+.panel.collapsed .multi-select-actions {
+  display: none;
+}
+
+.panel.collapsed {
+  min-width: 40px;
+  flex: 0 0 40px;
+}
+
+/* Field Browsers Stack */
+.field-browsers-stack {
+  display: flex;
+  flex-direction: column; /* Stack vertically like other sidebar items */
+  gap: 2px; /* Match sidebar-section-body vertical spacing */
+  flex: 1; /* Grow to fill available sidebar space */
+  overflow: hidden;
+  min-height: 0; /* Allow flexbox shrinking */
+}
+
+.field-browsers-stack > .panel {
+  flex: 1 1 300px; /* Grow/shrink from 300px basis - larger when fewer browsers, smaller when more */
+  min-height: 150px; /* Minimum usable size when many sections open */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Contain scrolling to .field-list */
+  border: none;
+  background: var(--bg-sidebar);
+}
+
+.field-browsers-stack > .panel.collapsed {
+  flex: 0 0 auto; /* Collapsed panels don't take flex space */
+  min-height: auto;
+}
+
+/* Custom Badge in Header */
+.custom-badge-header {
+  background: var(--badge-custom-bg) !important;
+  border: 1px solid var(--badge-custom-border) !important;
+  color: var(--badge-custom-text) !important;
+}
+
+/* System Badges in Header */
+.source-badge-header {
+  background: var(--badge-source-bg) !important;
+  color: var(--badge-source-text) !important;
+}
+
+.target-badge-header {
+  background: var(--badge-target-bg) !important;
+  color: var(--badge-target-text) !important;
+}
+
+/* Field Pills - No borders, subtle backgrounds */
+.field-pill {
+  border: none !important;
+  background: var(--pill-bg) !important;
+}
+
+.field-pill:hover {
+  background: var(--pill-hover-bg) !important;
+}
+
+/* Multi-Select Actions - Subtle top border only */
+.multi-select-actions {
+  border-left: none !important;
+  border-right: none !important;
+  border-bottom: none !important;
+  border-top: 1px solid var(--border-subtle) !important;
+}
+
+/* ==========================================================================
+   SIDEBAR MODE - When FieldBrowser is nested in sidebar
+   ========================================================================== */
+
+.panel.sidebar-mode {
+  flex: 1 1 auto; /* CRITICAL: Receive flex growth from parent */
+  min-height: 0; /* Allow shrinking */
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  border: none;
+  margin-bottom: 0;
+  overflow: hidden;
+}
+
+.panel.sidebar-mode .panel-body {
+  flex: 1 1 auto; /* Grow to fill panel */
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+}
+
+.panel.sidebar-mode .field-controls {
+  flex-shrink: 0; /* Fixed size - don't shrink */
+  padding: 12px;
+  background: var(--bg-sidebar);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.panel.sidebar-mode .field-list {
+  flex: 1 1 auto; /* Expand to fill remaining space */
+  min-height: 150px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px 12px;
+}

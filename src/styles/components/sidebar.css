@@ -1,0 +1,334 @@
+/* ==========================================================================
+   SIDEBAR COMPONENTS
+   Minimal borders, clean hierarchy
+   ========================================================================== */
+
+/* Sidebar Header */
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md) var(--spacing-xl);
+  margin-bottom: 0;
+  flex-shrink: 0;
+  height: 8%;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.sidebar-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar-header h1 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.sidebar-subtitle {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: var(--font-weight-regular);
+}
+
+/* ==========================================================================
+   NAVIGATION CLASSES
+   Unified navigation structure for sidebar sections
+   ========================================================================== */
+
+/* Navigation Container */
+.sidebar-nav {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Top-Level Navigation Item (e.g., Package, Data subsection header) */
+.sidebar-nav-item {
+  padding-block: var(--spacing-sm);
+  padding-inline: max(var(--spacing-xl), 2vw);
+  padding-left: max(calc(var(--spacing-md) + var(--spacing-lg)), 2.5vw); /* Indented with responsive min */
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: 2px;
+  border: none;
+  background: var(--bg-sidebar);
+  width: 100%; /* Full width to allow flex children to align right */
+  /* h6 Typography */
+  font-size: 1.03rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  line-height: var(--line-height-tight);
+}
+
+.sidebar-nav-item:hover {
+  background: var(--sidebar-item-hover);
+  color: var(--text-primary);
+}
+
+.sidebar-nav-item.active {
+  background: var(--sidebar-item-active);
+  color: var(--text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Nested Navigation Item (e.g., Flow under Package, Data action item) */
+.sidebar-nav-subitem {
+  padding: var(--spacing-md) var(--spacing-lg);
+  padding-left: calc(var(--spacing-md) + var(--spacing-lg)); /* Indented */
+  margin-left: var(--spacing-md);
+  margin-right: var(--spacing-md);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: 2px;
+  border: none;
+  background: var(--bg-canvas);
+  /* h7 Typography */
+  font-size: 0.97rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  line-height: var(--line-height-tight);
+}
+
+.sidebar-nav-subitem:hover {
+  background: var(--sidebar-item-hover);
+  color: var(--text-primary);
+}
+
+.sidebar-nav-subitem.active {
+  background: var(--sidebar-item-active);
+  padding-left: calc(var(--spacing-md) + var(--spacing-lg)); /* Indented */
+  color: var(--text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Button-specific styles for export/import actions */
+button.sidebar-nav-subitem {
+  position: relative;
+  z-index: 1;
+  pointer-events: auto;
+}
+
+button.sidebar-nav-subitem:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+button.sidebar-nav-subitem:disabled:hover {
+  background: var(--bg-sidebar);
+  color: var(--text-secondary);
+}
+
+/* Add Flow Button */
+.sidebar-nav-add-flow-btn {
+  padding: 6px 12px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 0.97rem;
+  margin-top: 4px;
+  margin-right: var(--spacing-md);
+  margin-left: auto;
+  align-self: flex-end;
+  transition: all var(--transition-fast);
+}
+
+.sidebar-nav-add-flow-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+/* Package Flows Container */
+.package-flows {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Flow Item Content */
+.flow-item-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.flow-item-name {
+  font-size: 1.13rem;
+  font-weight: 500;
+}
+
+.flow-item-meta {
+  font-size: 0.94rem;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+/* Active flow meta - system-specific colors */
+.sidebar-nav-subitem.active.centric .flow-item-meta {
+  color: var(--centric);
+}
+
+.sidebar-nav-subitem.active.fulfil .flow-item-meta {
+  color: var(--fulfil);
+}
+
+.sidebar-nav-subitem.active.salsify .flow-item-meta {
+  color: var(--salsify);
+}
+
+/* Flow Actions (duplicate, delete buttons) */
+.flow-actions {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+.sidebar-nav-subitem button {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.13rem;
+  cursor: pointer;
+  padding: 2px 0px;
+  line-height: 1;
+}
+
+.sidebar-nav-subitem button:hover {
+  color: var(--color-cyan);
+}
+
+.sidebar-nav-subitem button:last-child:hover {
+  color: var(--bool-red);
+}
+
+/* ==========================================================================
+   LAYOUT CONTAINER - NATURAL STACKING FLOW
+   All sections behave the same: expand, cap, scroll
+   ========================================================================== */
+
+.flow-sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow-y: auto; /* Allow sidebar to scroll if needed */
+  overflow-x: hidden;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border-subtle);
+}
+
+/* Section Container - All sections behave identically */
+.sidebar-section-container {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto; /* Don't grow, don't shrink */
+  min-height: 0;
+  margin-bottom: 0;
+}
+
+/* Collapsed sections take minimal space */
+.sidebar-section-container.collapsed {
+  flex: 0 0 auto;
+}
+
+/* Section Header */
+.sidebar-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: var(--spacing-md);
+  padding-inline: max(var(--spacing-xl), 2vw);
+  cursor: pointer;
+  user-select: none;
+  flex-shrink: 0;
+  font-size: 1.2rem;
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-primary);
+  margin: 0;
+  transition: color var(--transition-fast);
+}
+
+.sidebar-section-header:hover {
+  color: var(--text-secondary);
+}
+
+.sidebar-section-header button {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px 8px;
+  font-size: 1.1rem;
+  line-height: 1;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.sidebar-section-header button:hover {
+  background: var(--btn-ghost-bg-hover);
+  color: var(--text-primary);
+}
+
+/* Section Body - Same rules for ALL sections */
+.sidebar-section-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1 1 auto; /* No flex growth */
+  max-height: 35vh; /* All sections capped at same height */
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Collapsed state */
+.sidebar-section-container.collapsed .sidebar-section-body {
+  display: none;
+}
+
+/* Nav Item Content (for nested expandables like SOURCE/TARGET/CUSTOM) */
+.sidebar-nav-item-content {
+  flex: 1 1 auto; /* Grow to share available space */
+  min-height: 0; /* Allow flexbox shrinking */
+  display: flex; /* Critical: make this a flex container */
+  flex-direction: column;
+  overflow: hidden; /* Contain child scrolling */
+}
+
+/* FIELDS section gets larger share of space */
+.sidebar-section-container.fields-section .sidebar-nav-item-content {
+  min-height: 250px; /* Ensure decent height per browser */
+}
+
+.sidebar-nav-item-content.collapsed {
+  display: none;
+}
+
+.sidebar-nav-item-content.collapsed {
+  display: none;
+}
+/* FIELDS Section - Give more vertical space for field lists */
+.sidebar-section-container.fields-section .sidebar-section-body {
+  max-height: 50vh; /* Larger cap for FIELDS specifically */
+}
+
+/* Nav item content needs to grow to fill space */
+.sidebar-section-container.fields-section .sidebar-nav-item-content {
+  flex: 1 1 auto;
+  min-height: 200px; /* Ensure decent size even when collapsed siblings exist */
+  max-height: none; /* Allow full growth */
+}
