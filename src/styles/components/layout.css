@@ -96,6 +96,21 @@
   gap: var(--spacing-xs);
 }
 
+.activity-bar-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.activity-bar-controls {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-subtle);
+}
+
 .activity-bar-icon {
   width: 40px;
   height: 40px;

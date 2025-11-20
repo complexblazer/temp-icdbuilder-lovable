@@ -1,15 +1,34 @@
-export function ActivityBar({ items, activeItem, onItemClick }) {
+export function ActivityBar({ items, activeItem, onItemClick, panelControls, collapsedPanels, onPanelControlClick }) {
   return (
     <div className="activity-bar">
-      {items.map(item => (
-        <ActivityBarIcon
-          key={item.id}
-          icon={item.icon}
-          label={item.label}
-          active={activeItem === item.id}
-          onClick={() => onItemClick(item.id)}
-        />
-      ))}
+      <div className="activity-bar-main">
+        {items.map(item => (
+          <ActivityBarIcon
+            key={item.id}
+            icon={item.icon}
+            label={item.label}
+            active={activeItem === item.id}
+            onClick={() => onItemClick(item.id)}
+          />
+        ))}
+      </div>
+      
+      {panelControls && (
+        <div className="activity-bar-controls">
+          {panelControls.map(control => {
+            const isCollapsed = collapsedPanels?.[control.panel];
+            return (
+              <ActivityBarIcon
+                key={control.id}
+                icon={isCollapsed ? control.iconCollapsed : control.icon}
+                label={control.label}
+                active={!isCollapsed}
+                onClick={() => onPanelControlClick(control.id)}
+              />
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

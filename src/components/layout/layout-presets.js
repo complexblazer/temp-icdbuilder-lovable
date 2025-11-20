@@ -24,3 +24,20 @@ export const activityItems = [
   { id: 'systems', icon: '🔌', label: 'Systems' },
   { id: 'settings', icon: '⚙️', label: 'Settings' },
 ];
+
+export const panelControlItems = [
+  { 
+    id: 'toggle-left', 
+    panel: 'left',
+    icon: '◧', 
+    iconCollapsed: '▷',
+    label: 'Toggle Flows Panel' 
+  },
+  { 
+    id: 'toggle-right', 
+    panel: 'right',
+    icon: '◨', 
+    iconCollapsed: '◁',
+    label: 'Toggle Fields Panel' 
+  },
+];
