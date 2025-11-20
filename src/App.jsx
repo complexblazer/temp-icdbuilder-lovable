@@ -1614,8 +1614,14 @@ export default function App() {
             onTabClick={(tab) => setBottomPanel(prev => ({ ...prev, activeBrowser: tab }))}
             onTabClose={handleTabClose}
             fields={allFields}
-            onFieldClick={(field) => handleAddFieldToMapping(field, bottomPanel.activeBrowser)}
-            mappings={activeFlow?.mappings || []}
+            onAddField={handleAddFieldToMapping}
+            onBulkAddFields={handleBulkAddFields}
+            sourceSystem={activeFlow?.source_system || ''}
+            targetSystem={activeFlow?.target_system || ''}
+            usedFieldIds={new Set([
+              ...(activeFlow?.mappings || []).filter(m => m.source).map(m => m.source.id),
+              ...(activeFlow?.mappings || []).filter(m => m.target).map(m => m.target.id)
+            ])}
           />
         }
       />
