@@ -3,11 +3,12 @@ import { ResizableLayout } from './ResizableLayout';
 import { ActivityBar } from './ActivityBar';
 import { activityItems, panelControlItems } from './layout-presets';
 
-export function AppLayout({ flowsPanel, workspacePanel, fieldsPanel }) {
+export function AppLayout({ flowsPanel, workspacePanel, fieldsPanel, bottomPanel }) {
   const [activePanel, setActivePanel] = useState('flows');
   const [collapsedPanels, setCollapsedPanels] = useState({
     left: false,
-    right: false
+    right: false,
+    bottom: false
   });
 
   const toggleLeftPanel = () => {
@@ -18,9 +19,14 @@ export function AppLayout({ flowsPanel, workspacePanel, fieldsPanel }) {
     setCollapsedPanels(prev => ({ ...prev, right: !prev.right }));
   };
 
+  const toggleBottomPanel = () => {
+    setCollapsedPanels(prev => ({ ...prev, bottom: !prev.bottom }));
+  };
+
   const handlePanelControlClick = (panelId) => {
     if (panelId === 'toggle-left') toggleLeftPanel();
     if (panelId === 'toggle-right') toggleRightPanel();
+    if (panelId === 'toggle-bottom') toggleBottomPanel();
   };
 
   return (
@@ -37,10 +43,12 @@ export function AppLayout({ flowsPanel, workspacePanel, fieldsPanel }) {
         leftPanel={flowsPanel}
         centerPanel={workspacePanel}
         rightPanel={fieldsPanel}
-        defaultWidths={{ left: 300, center: 800, right: 300 }}
+        bottomPanel={bottomPanel}
+        defaultWidths={{ left: 300, center: 800, right: 300, bottom: 250 }}
         collapsedPanels={collapsedPanels}
         onToggleLeft={toggleLeftPanel}
         onToggleRight={toggleRightPanel}
+        onToggleBottom={toggleBottomPanel}
       />
     </div>
   );

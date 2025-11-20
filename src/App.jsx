@@ -9,6 +9,7 @@ import {
 } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import { AppLayout } from "./components/layout/AppLayout";
+import { BottomPanel } from "./components/layout/BottomPanel";
 import FieldBrowser from "./components/FieldBrowser";
 import MappingTable from "./components/MappingTable";
 import CatalogTable from "./components/CatalogTable";
@@ -29,6 +30,8 @@ import "./styles/components/field-browser.css";
 import "./styles/components/mappings.css";
 import "./styles/components/catalog.css";
 import "./styles/components/modal.css";
+import "./styles/components/layout.css";
+import "./styles/components/bottom-panel.css";
 
 function getSystemColor(system) {
   const sys = system.toLowerCase();
@@ -247,6 +250,10 @@ export default function App() {
     source: true,
     target: true,
     customFields: false
+  });
+  const [bottomPanel, setBottomPanel] = useState({
+    activeBrowser: null,
+    openTabs: []
   });
   const [customFieldForm, setCustomFieldForm] = useState({
     system: "",
@@ -986,6 +993,45 @@ export default function App() {
     });
   };
 
+  const handleToggleFieldBrowser = (browserType) => {
+    setBottomPanel(prev => {
+      const isInTabs = prev.openTabs.includes(browserType);
+      
+      if (!isInTabs) {
+        // Add to tabs and set as active
+        return {
+          activeBrowser: browserType,
+          openTabs: [...prev.openTabs, browserType]
+        };
+      } else if (prev.activeBrowser === browserType) {
+        // Already active - close it
+        const newTabs = prev.openTabs.filter(t => t !== browserType);
+        return {
+          activeBrowser: newTabs.length > 0 ? newTabs[0] : null,
+          openTabs: newTabs
+        };
+      } else {
+        // In tabs but not active - switch to it
+        return {
+          ...prev,
+          activeBrowser: browserType
+        };
+      }
+    });
+  };
+
+  const handleTabClose = (browserType) => {
+    setBottomPanel(prev => {
+      const newTabs = prev.openTabs.filter(t => t !== browserType);
+      return {
+        activeBrowser: newTabs.length > 0 && prev.activeBrowser === browserType 
+          ? newTabs[0] 
+          : prev.activeBrowser,
+        openTabs: newTabs
+      };
+    });
+  };
+
   const handleDragStart = (event) => {
     const { active } = event;
     if (active.data.current?.kind === 'field') {
@@ -1315,9 +1361,11 @@ export default function App() {
                   {/* SOURCE */}
                   <div 
                     className="sidebar-nav-item"
-                    onClick={() => setFieldBrowsers(prev => ({ ...prev, source: !prev.source }))}
+                    onClick={() => handleToggleFieldBrowser('source')}
                   >
-                    <span className="nav-chevron">{fieldBrowsers.source ? '▾' : '▸'}</span>
+                    <span className="nav-chevron">
+                      {bottomPanel.openTabs.includes('source') ? '●' : '○'}
+                    </span>
                     <span>SOURCE</span>
                     {activeFlow?.source_system && (
                       <span className="system-badge" style={{ 
@@ -1329,30 +1377,15 @@ export default function App() {
                       </span>
                     )}
                   </div>
-                  {fieldBrowsers.source && (
-                    <div className="sidebar-nav-item-content">
-                      <FieldBrowser
-                        title="Source"
-                        system={activeFlow?.source_system || ""}
-                        objectFilter={sourceObject}
-                        fields={allFields}
-                        onObjectFilterChange={setSourceObject}
-                        onAddField={(f) => handleAddFieldToMapping(f, "source")}
-                        onBulkAdd={(fields) => handleBulkAddFields(fields, "source")}
-                        droppableId="source-fields"
-                        usedFieldIds={usedSourceFieldIds}
-                        systemLocked={true}
-                        sidebarMode={true}
-                      />
-                    </div>
-                  )}
 
                   {/* TARGET */}
                   <div 
                     className="sidebar-nav-item"
-                    onClick={() => setFieldBrowsers(prev => ({ ...prev, target: !prev.target }))}
+                    onClick={() => handleToggleFieldBrowser('target')}
                   >
-                    <span className="nav-chevron">{fieldBrowsers.target ? '▾' : '▸'}</span>
+                    <span className="nav-chevron">
+                      {bottomPanel.openTabs.includes('target') ? '●' : '○'}
+                    </span>
                     <span>TARGET</span>
                     {activeFlow?.target_system && (
                       <span className="system-badge" style={{ 
@@ -1364,27 +1397,17 @@ export default function App() {
                       </span>
                     )}
                   </div>
-                  {fieldBrowsers.target && (
-                    <div className="sidebar-nav-item-content">
-                      <FieldBrowser
-                        title="Target"
-                        system={activeFlow?.target_system || ""}
-                        objectFilter={targetObject}
-                        fields={allFields}
-                        onObjectFilterChange={setTargetObject}
-                        onAddField={(f) => handleAddFieldToMapping(f, "target")}
-                        onBulkAdd={(fields) => handleBulkAddFields(fields, "target")}
-                        droppableId="target-fields"
-                        usedFieldIds={usedTargetFieldIds}
-                        systemLocked={true}
-                        sidebarMode={true}
-                      />
-                    </div>
-                  )}
 
                   {/* CUSTOM */}
                   <div 
                     className="sidebar-nav-item"
+                    onClick={() => handleToggleFieldBrowser('custom')}
+                  >
+                    <span className="nav-chevron">
+                      {bottomPanel.openTabs.includes('custom') ? '●' : '○'}
+                    </span>
+                    <span>CUSTOM</span>
+                  </div>
                     onClick={() => setFieldBrowsers(prev => ({ ...prev, customFields: !prev.customFields }))}
                   >
                     <span className="nav-chevron">{fieldBrowsers.customFields ? '▾' : '▸'}</span>
@@ -1698,6 +1721,17 @@ export default function App() {
           </>
         }
         fieldsPanel={<div style={{ padding: 20 }}><h2>Fields Placeholder</h2></div>}
+        bottomPanel={
+          <BottomPanel
+            activeBrowser={bottomPanel.activeBrowser}
+            openTabs={bottomPanel.openTabs}
+            onTabClick={(tab) => setBottomPanel(prev => ({ ...prev, activeBrowser: tab }))}
+            onTabClose={handleTabClose}
+            fields={allFields}
+            onFieldClick={(field) => handleAddFieldToMapping(field, bottomPanel.activeBrowser)}
+            mappings={activeFlow?.mappings || []}
+          />
+        }
       />
       <DragOverlay>
         {activeField ? (
