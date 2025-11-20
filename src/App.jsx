@@ -1072,36 +1072,7 @@ export default function App() {
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <AppLayout
         flowsPanel={
-          <div className="app-root">
-        {catalogMeta && (
-          <div className="catalog-status-banner">
-            📁 Catalog loaded: <strong>{catalogMeta.filename}</strong> ({catalogMeta.recordCount} fields)
-            <button 
-              type="button" 
-              className="banner-dismiss"
-              onClick={() => setCatalogMeta(null)}
-              title="Dismiss"
-            >
-              ×
-            </button>
-          </div>
-        )}
-        {storageError && (
-          <div className="storage-error-banner">
-            ⚠️ {storageError}
-            <button 
-              type="button" 
-              className="banner-dismiss"
-              onClick={() => setStorageError(null)}
-              title="Dismiss"
-            >
-              ×
-            </button>
-          </div>
-        )}
-        <main className="app-main">
-          <div className="columns">
-            <div className="flow-sidebar">
+          <div className="flow-sidebar">
               
               <div className="sidebar-header">
                 <div className="sidebar-title-group">
@@ -1651,58 +1622,81 @@ export default function App() {
               </div>
 
             </div>
-            <div className="mappings-panel">
-              {/* View Toggle */}
-              <div className="view-toggle-container">
-                <button
-                  className={`view-toggle-btn ${activeView === 'mappings' ? 'active' : ''}`}
-                  onClick={() => setActiveView('mappings')}
+        }
+        workspacePanel={
+          <>
+            {catalogMeta && (
+              <div className="catalog-status-banner">
+                📁 Catalog loaded: <strong>{catalogMeta.filename}</strong> ({catalogMeta.recordCount} fields)
+                <button 
+                  type="button" 
+                  className="banner-dismiss"
+                  onClick={() => setCatalogMeta(null)}
+                  title="Dismiss"
                 >
-                  Mappings
-                </button>
-                <button
-                  className={`view-toggle-btn ${activeView === 'catalog' ? 'active' : ''}`}
-                  onClick={() => setActiveView('catalog')}
-                  disabled={!fieldsCatalog || fieldsCatalog.length === 0}
-                  title={(!fieldsCatalog || fieldsCatalog.length === 0) ? "No catalog loaded" : "View catalog"}
-                >
-                  Catalog
+                  ×
                 </button>
               </div>
+            )}
+            {storageError && (
+              <div className="storage-error-banner">
+                ⚠️ {storageError}
+                <button 
+                  type="button" 
+                  className="banner-dismiss"
+                  onClick={() => setStorageError(null)}
+                  title="Dismiss"
+                >
+                  ×
+                </button>
+              </div>
+            )}
 
-              {/* Conditional View Rendering */}
-              {activeView === 'mappings' ? (
-                <MappingTable
-                  mappings={activeFlow?.mappings || []}
-                  onUpdate={(updated) => updateActiveMappings(updated)}
-                  onRemove={(idx) =>
-                    updateActiveMappings(mappings => mappings.filter((_, i) => i !== idx))
-                  }
-                  sourceSystem={activeFlow?.source_system || ""}
-                  targetSystem={activeFlow?.target_system || ""}
-                  availableFields={allFields}
-                  onCreateCustomField={handleCreateCustomField}
-                  packageName={packages.find(p => p.id === activeFlow?.package_id)?.name}
-                  flowName={activeFlow?.name}
-                  showAllFlows={showAllFlows}
-                  onToggleShowAll={() => setShowAllFlows(!showAllFlows)}
-                  allFlows={flows}
-                  packages={packages}
-                />
-              ) : (
-                <CatalogTable
-                  catalog={fieldsCatalog}
-                  catalogMeta={catalogMeta}
-                  onUpdateField={handleUpdateCatalogField}
-                  onDeleteField={handleDeleteCatalogField}
-                />
-              )}
+            <div className="view-toggle-container">
+              <button
+                className={`view-toggle-btn ${activeView === 'mappings' ? 'active' : ''}`}
+                onClick={() => setActiveView('mappings')}
+              >
+                Mappings
+              </button>
+              <button
+                className={`view-toggle-btn ${activeView === 'catalog' ? 'active' : ''}`}
+                onClick={() => setActiveView('catalog')}
+                disabled={!fieldsCatalog || fieldsCatalog.length === 0}
+                title={(!fieldsCatalog || fieldsCatalog.length === 0) ? "No catalog loaded" : "View catalog"}
+              >
+                Catalog
+              </button>
             </div>
-          </div>
-        </main>
-      </div>
+
+            {activeView === 'mappings' ? (
+              <MappingTable
+                mappings={activeFlow?.mappings || []}
+                onUpdate={(updated) => updateActiveMappings(updated)}
+                onRemove={(idx) =>
+                  updateActiveMappings(mappings => mappings.filter((_, i) => i !== idx))
+                }
+                sourceSystem={activeFlow?.source_system || ""}
+                targetSystem={activeFlow?.target_system || ""}
+                availableFields={allFields}
+                onCreateCustomField={handleCreateCustomField}
+                packageName={packages.find(p => p.id === activeFlow?.package_id)?.name}
+                flowName={activeFlow?.name}
+                showAllFlows={showAllFlows}
+                onToggleShowAll={() => setShowAllFlows(!showAllFlows)}
+                allFlows={flows}
+                packages={packages}
+              />
+            ) : (
+              <CatalogTable
+                catalog={fieldsCatalog}
+                catalogMeta={catalogMeta}
+                onUpdateField={handleUpdateCatalogField}
+                onDeleteField={handleDeleteCatalogField}
+              />
+            )}
+          </>
         }
-        workspacePanel={<div style={{ padding: 20 }}><h2>Workspace Placeholder</h2></div>}
         fieldsPanel={<div style={{ padding: 20 }}><h2>Fields Placeholder</h2></div>}
       />
       <DragOverlay>
