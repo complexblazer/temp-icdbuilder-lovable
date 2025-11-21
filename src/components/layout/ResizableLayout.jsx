@@ -4,7 +4,8 @@ import { ResizeHandle } from "./ResizeHandle";
 const MIN_WIDTH_SIDE = 200;
 const MIN_WIDTH_CENTER = 400;
 const MIN_HEIGHT_BOTTOM = 150;
-const COLLAPSE_THRESHOLD = 100;
+const COLLAPSE_THRESHOLD = 150; // ✅ Increased from 100 for better UX
+const EXPAND_THRESHOLD = 50;    // ✅ Threshold to re-expand from collapsed state
 
 export function ResizableLayout({
   leftPanel,
@@ -22,8 +23,9 @@ export function ResizableLayout({
   const handleLeftResize = useCallback(
     (delta) => {
       setWidths((prev) => {
+        // ✅ Handle expansion from collapsed state
         if (collapsedPanels.left) {
-          if (delta > 10) {
+          if (delta > EXPAND_THRESHOLD) {
             onToggleLeft?.();
             return { ...prev, left: MIN_WIDTH_SIDE };
           }
@@ -32,16 +34,14 @@ export function ResizableLayout({
 
         const newLeft = Math.max(0, prev.left + delta);
 
+        // ✅ Collapse if dragged below threshold
         if (newLeft < COLLAPSE_THRESHOLD) {
           onToggleLeft?.();
           return { ...prev, left: 0 };
         }
 
-        if (newLeft >= MIN_WIDTH_SIDE) {
-          return { ...prev, left: newLeft };
-        }
-
-        return { ...prev, left: MIN_WIDTH_SIDE };
+        // ✅ Enforce minimum width
+        return { ...prev, left: Math.max(MIN_WIDTH_SIDE, newLeft) };
       });
     },
     [collapsedPanels.left, onToggleLeft],
@@ -50,8 +50,9 @@ export function ResizableLayout({
   const handleRightResize = useCallback(
     (delta) => {
       setWidths((prev) => {
+        // ✅ Handle expansion from collapsed state
         if (collapsedPanels.right) {
-          if (delta < -10) {
+          if (delta < -EXPAND_THRESHOLD) {
             onToggleRight?.();
             return { ...prev, right: MIN_WIDTH_SIDE };
           }
@@ -60,16 +61,14 @@ export function ResizableLayout({
 
         const newRight = Math.max(0, prev.right - delta);
 
+        // ✅ Collapse if dragged below threshold
         if (newRight < COLLAPSE_THRESHOLD) {
           onToggleRight?.();
           return { ...prev, right: 0 };
         }
 
-        if (newRight >= MIN_WIDTH_SIDE) {
-          return { ...prev, right: newRight };
-        }
-
-        return { ...prev, right: MIN_WIDTH_SIDE };
+        // ✅ Enforce minimum width
+        return { ...prev, right: Math.max(MIN_WIDTH_SIDE, newRight) };
       });
     },
     [collapsedPanels.right, onToggleRight],
@@ -78,8 +77,9 @@ export function ResizableLayout({
   const handleBottomResize = useCallback(
     (delta) => {
       setWidths((prev) => {
+        // ✅ Handle expansion from collapsed state
         if (collapsedPanels.bottom) {
-          if (delta < -10) {
+          if (delta < -EXPAND_THRESHOLD) {
             onToggleBottom?.();
             return { ...prev, bottom: MIN_HEIGHT_BOTTOM };
           }
@@ -88,16 +88,14 @@ export function ResizableLayout({
 
         const newBottom = Math.max(0, prev.bottom - delta);
 
+        // ✅ Collapse if dragged below threshold
         if (newBottom < COLLAPSE_THRESHOLD) {
           onToggleBottom?.();
           return { ...prev, bottom: 0 };
         }
 
-        if (newBottom >= MIN_HEIGHT_BOTTOM) {
-          return { ...prev, bottom: newBottom };
-        }
-
-        return { ...prev, bottom: MIN_HEIGHT_BOTTOM };
+        // ✅ Enforce minimum height
+        return { ...prev, bottom: Math.max(MIN_HEIGHT_BOTTOM, newBottom) };
       });
     },
     [collapsedPanels.bottom, onToggleBottom],

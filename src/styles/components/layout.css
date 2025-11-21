@@ -57,6 +57,14 @@
   transition: background 150ms;
   position: relative;
   z-index: 10;
+  pointer-events: auto; /* ✅ Enable pointer events by default */
+}
+
+/* ✅ Disable interaction when adjacent panel is collapsed */
+.resizable-panel.collapsed + .resize-handle,
+.resize-handle + .resizable-panel.collapsed {
+  pointer-events: none;
+  opacity: 0.3;
 }
 
 .resize-handle.vertical {
@@ -72,9 +80,15 @@
   width: 100%;
 }
 
-.resize-handle:hover,
+.resize-handle:hover {
+  background: var(--border-active);
+}
+
+/* ✅ Visual feedback during drag */
 .resize-handle.dragging {
   background: var(--border-strong);
+  transition: none; /* Disable transition during drag */
+  cursor: grabbing; /* Visual feedback */
 }
 
 .resize-handle.vertical::before {
