@@ -156,59 +156,66 @@ export function ResizableLayout({
         </div>
       </div>
 
-      {/* Bottom panel - BOUNDED by sidebars (spans left → right, not full width) */}
+      {/* Bottom section - sidebars extend continuously with handle overlay */}
       {bottomHeight > 0 && (
         <>
-          {/* Resize handle row - only visible in center, invisible in sidebar areas */}
+          {/* Single bottom row with resize handle overlaid on center */}
           <div
             style={{
-              display: "grid",
-              gridTemplateColumns: `${leftWidth}px auto 1fr auto ${rightWidth}px`,
-              height: "4px",
-              overflow: "hidden",
-            }}
-          >
-            {/* Left sidebar space - no handle here */}
-            <div style={{ width: leftWidth, background: "var(--bg-sidebar)" }} />
-
-            {/* Left handle space - no handle here */}
-            <div style={{ width: "4px", background: "transparent" }} />
-
-            {/* Resize handle ONLY in center area */}
-            <ResizeHandle onDrag={handleBottomResize} onDoubleClick={toggleBottomPanel} orientation="horizontal" />
-
-            {/* Right handle space - no handle here */}
-            <div style={{ width: "4px", background: "transparent" }} />
-
-            {/* Right sidebar space - no handle here */}
-            <div style={{ width: rightWidth, background: "var(--bg-sidebar)" }} />
-          </div>
-
-          {/* Bottom panel bounded by sidebar widths */}
-          <div
-            style={{
+              position: "relative",
               display: "grid",
               gridTemplateColumns: `${leftWidth}px auto 1fr auto ${rightWidth}px`,
               height: bottomHeight,
               overflow: "hidden",
             }}
           >
-            {/* Left sidebar space - BOTTOM PANEL STARTS AFTER THIS */}
-            <div style={{ width: leftWidth, background: "var(--bg-sidebar)" }} />
+            {/* Left sidebar - extends continuously from top */}
+            <div
+              style={{
+                width: leftWidth,
+                background: "var(--bg-sidebar)",
+                borderRight: leftWidth > 0 ? "1px solid var(--border-subtle)" : "none",
+              }}
+            />
 
             {/* Left handle space */}
             <div style={{ width: "4px", background: "transparent" }} />
 
-            {/* Bottom panel content - BOUNDED between sidebars */}
-            <div className="resizable-panel bottom" style={{ overflow: "hidden" }}>
-              {bottomPanel}
+            {/* Center area - contains resize handle + bottom panel */}
+            <div
+              style={{
+                position: "relative",
+                overflow: "hidden",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              {/* Resize handle at top of center area */}
+              <ResizeHandle onDrag={handleBottomResize} onDoubleClick={toggleBottomPanel} orientation="horizontal" />
+
+              {/* Bottom panel content */}
+              <div
+                className="resizable-panel bottom"
+                style={{
+                  flex: 1,
+                  overflow: "hidden",
+                }}
+              >
+                {bottomPanel}
+              </div>
             </div>
 
             {/* Right handle space */}
             <div style={{ width: "4px", background: "transparent" }} />
 
-            {/* Right sidebar space - BOTTOM PANEL ENDS BEFORE THIS */}
-            <div style={{ width: rightWidth, background: "var(--bg-sidebar)" }} />
+            {/* Right sidebar - extends continuously from top */}
+            <div
+              style={{
+                width: rightWidth,
+                background: "var(--bg-sidebar)",
+                borderLeft: rightWidth > 0 ? "1px solid var(--border-subtle)" : "none",
+              }}
+            />
           </div>
         </>
       )}
