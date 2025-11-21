@@ -1169,7 +1169,6 @@ export default function App() {
         
         alert('Workspace imported successfully!');
       },
-      },
       (error) => {
         alert(`Failed to import workspace: ${error}`);
       }
