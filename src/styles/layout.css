@@ -1,83 +1,192 @@
 /* ==========================================================================
-   LAYOUT UTILITIES
-   Page structure, containers, and layout patterns
+   RESIZABLE LAYOUT COMPONENTS
+   Three-panel layout with resize handles and activity bar
+   FIXED: Full viewport height enforcement
    ========================================================================== */
 
-.app-root {
-  height: 100vh;
+/* Resizable Layout Wrapper - Full Viewport */
+.resizable-layout-wrapper {
+  height: 100vh !important; /* Force full viewport height */
+  width: 100vw !important;
+  overflow: hidden;
+  position: fixed; /* Prevent any parent container from collapsing */
+  top: 0;
+  left: 0;
+}
+
+/* Resizable Layout Container */
+.resizable-layout {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  transition: grid-template-columns 300ms ease;
+}
+
+.resizable-panel {
+  height: 100%;
+  transition:
+    width 300ms ease,
+    height 300ms ease;
+}
+
+.resizable-panel.left,
+.resizable-panel.right {
+  height: 100vh !important; /* Sidebar panels always full height */
+}
+
+.resizable-panel.collapsed {
+  width: 0 !important;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Resize Handle */
+.resize-handle {
+  background: transparent;
+  transition: background 150ms;
+  position: relative;
+  z-index: 10;
+}
+
+.resize-handle.vertical {
+  width: 4px;
+  cursor: col-resize;
+  height: 100vh; /* Full height for vertical handles */
+}
+
+.resize-handle.horizontal {
+  height: 4px;
+  cursor: row-resize;
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
+.resize-handle:hover,
+.resize-handle.dragging {
+  background: var(--border-strong);
+}
+
+.resize-handle.vertical::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -2px;
+  right: -2px;
+  bottom: 0;
+  cursor: col-resize;
+}
+
+.resize-handle.horizontal::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -2px;
+  bottom: -2px;
+  cursor: row-resize;
+}
+
+/* Panel Component */
+.panel {
   display: flex;
   flex-direction: column;
-  background: var(--bg-canvas);
+  height: 100%;
+  background: var(--bg-panel);
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-panel-primary);
+}
+
+.panel-collapse-btn {
+  padding: var(--spacing-xs);
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 150ms;
+}
+
+.panel-collapse-btn:hover {
+  background: var(--bg-panel-alt);
   color: var(--text-primary);
-  overflow: hidden;
+  border-color: var(--border-strong);
 }
 
-.app-header {
-  padding: var(--spacing-lg) var(--spacing-xl);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-lg);
-  background: var(--bg-canvas);
-  flex-shrink: 0;
-}
-
-.app-body {
-  display: flex;
+.panel-content {
   flex: 1;
-  overflow: hidden;
+  overflow: auto;
 }
 
-.sidebar {
-  width: 8%;
-  max-width: 280px;
-  background: var(--bg-canvas);
+/* Activity Bar */
+.activity-bar {
+  width: 48px;
+  height: 100vh !important; /* Full viewport height */
+  background: var(--bg-panel);
+  border-right: 1px solid var(--border-subtle);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.main-content {
-  flex: 1;
-  overflow: hidden;
-  background: var(--bg-canvas);
-  padding: var(--spacing-xl);
-}
-
-.container {
-  max-width: 100%;
-  margin: 0 auto;
-}
-
-.flex {
-  display: flex;
-}
-
-.flex-col {
-  flex-direction: column;
-}
-
-.flex-1 {
-  flex: 1;
-}
-
-.items-center {
   align-items: center;
+  padding: var(--spacing-sm) 0;
+  gap: var(--spacing-xs);
 }
 
-.justify-between {
-  justify-content: space-between;
+.activity-bar-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
 }
 
-.gap-sm {
-  gap: var(--spacing-sm);
+.activity-bar-controls {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-subtle);
 }
 
-.gap-md {
-  gap: var(--spacing-md);
+.activity-bar-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  position: relative;
+  transition: background 150ms;
 }
 
-.gap-lg {
-  gap: var(--spacing-lg);
+.activity-bar-icon:hover {
+  background: var(--bg-panel-alt);
+}
+
+.activity-bar-icon.active {
+  background: var(--bg-panel-alt);
+}
+
+.activity-bar-icon.active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  background: var(--bool-blue);
+  border-radius: 0 2px 2px 0;
+}
+
+.activity-bar-icon .icon {
+  font-size: 24px;
+  line-height: 1;
 }

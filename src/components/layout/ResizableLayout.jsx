@@ -1,190 +1,248 @@
-/* ==========================================================================
-   RESIZABLE LAYOUT COMPONENTS
-   Three-panel layout with resize handles and activity bar
-   FIXED: Full viewport height enforcement
-   ========================================================================== */
+import { useState, useCallback } from "react";
+import { ResizeHandle } from "./ResizeHandle";
 
-/* Resizable Layout Wrapper - Full Viewport */
-.resizable-layout-wrapper {
-  height: 100vh !important; /* Force full viewport height */
-  width: 100vw !important;
-  overflow: hidden;
-  position: fixed; /* Prevent any parent container from collapsing */
-  top: 0;
-  left: 0;
-}
+const MIN_WIDTH_SIDE = 200;
+const MIN_WIDTH_CENTER = 400;
+const MIN_HEIGHT_BOTTOM = 150;
+const COLLAPSE_THRESHOLD = 100; // Increased for better drag-to-collapse feel
 
-/* Resizable Layout Container */
-.resizable-layout {
-  width: 100%;
-  height: 100%;
-  display: grid;
-  transition: grid-template-columns 300ms ease;
-}
+export function ResizableLayout({
+  leftPanel,
+  centerPanel,
+  rightPanel,
+  bottomPanel,
+  defaultWidths = { left: 300, center: 800, right: 300, bottom: 250 },
+  collapsedPanels = { left: false, right: false, bottom: false },
+  onToggleLeft,
+  onToggleRight,
+  onToggleBottom,
+}) {
+  const [widths, setWidths] = useState(defaultWidths);
 
-.resizable-panel {
-  height: 100%;
-  transition: width 300ms ease, height 300ms ease;
-}
+  const handleLeftResize = useCallback(
+    (delta) => {
+      setWidths((prev) => {
+        // If collapsed, only expand on significant drag right
+        if (collapsedPanels.left) {
+          if (delta > 10) {
+            onToggleLeft?.();
+            return { ...prev, left: MIN_WIDTH_SIDE };
+          }
+          return prev;
+        }
 
-.resizable-panel.left,
-.resizable-panel.right {
-  height: 100vh !important; /* Sidebar panels always full height */
-}
+        // Calculate new width
+        const newLeft = Math.max(0, prev.left + delta);
 
-.resizable-panel.collapsed {
-  width: 0 !important;
-  overflow: hidden;
-  opacity: 0;
-  pointer-events: none;
-}
+        // Collapse if dragged below threshold
+        if (newLeft < COLLAPSE_THRESHOLD) {
+          onToggleLeft?.();
+          return { ...prev, left: 0 };
+        }
 
-/* Resize Handle */
-.resize-handle {
-  background: transparent;
-  transition: background 150ms;
-  position: relative;
-  z-index: 10;
-}
+        // Normal resize with minimum width
+        if (newLeft >= MIN_WIDTH_SIDE) {
+          return { ...prev, left: newLeft };
+        }
 
-.resize-handle.vertical {
-  width: 4px;
-  cursor: col-resize;
-  height: 100vh; /* Full height for vertical handles */
-}
+        // Snap to minimum
+        return { ...prev, left: MIN_WIDTH_SIDE };
+      });
+    },
+    [collapsedPanels.left, onToggleLeft],
+  );
 
-.resize-handle.horizontal {
-  height: 4px;
-  cursor: row-resize;
-  grid-column: 1 / -1;
-  width: 100%;
-}
+  const handleRightResize = useCallback(
+    (delta) => {
+      setWidths((prev) => {
+        // If collapsed, only expand on significant drag left
+        if (collapsedPanels.right) {
+          if (delta < -10) {
+            onToggleRight?.();
+            return { ...prev, right: MIN_WIDTH_SIDE };
+          }
+          return prev;
+        }
 
-.resize-handle:hover,
-.resize-handle.dragging {
-  background: var(--border-strong);
-}
+        // Calculate new width (inverse delta for right panel)
+        const newRight = Math.max(0, prev.right - delta);
 
-.resize-handle.vertical::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -2px;
-  right: -2px;
-  bottom: 0;
-  cursor: col-resize;
-}
+        // Collapse if dragged below threshold
+        if (newRight < COLLAPSE_THRESHOLD) {
+          onToggleRight?.();
+          return { ...prev, right: 0 };
+        }
 
-.resize-handle.horizontal::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: -2px;
-  bottom: -2px;
-  cursor: row-resize;
-}
+        // Normal resize with minimum width
+        if (newRight >= MIN_WIDTH_SIDE) {
+          return { ...prev, right: newRight };
+        }
 
-/* Panel Component */
-.panel {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  background: var(--bg-panel);
-}
+        // Snap to minimum
+        return { ...prev, right: MIN_WIDTH_SIDE };
+      });
+    },
+    [collapsedPanels.right, onToggleRight],
+  );
 
-.panel-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--spacing-md);
-  border-bottom: 1px solid var(--border-subtle);
-  background: var(--bg-panel-primary);
-}
+  const handleBottomResize = useCallback(
+    (delta) => {
+      setWidths((prev) => {
+        // If collapsed, only expand on significant drag up
+        if (collapsedPanels.bottom) {
+          if (delta < -10) {
+            onToggleBottom?.();
+            return { ...prev, bottom: MIN_HEIGHT_BOTTOM };
+          }
+          return prev;
+        }
 
-.panel-collapse-btn {
-  padding: var(--spacing-xs);
-  background: transparent;
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: all 150ms;
-}
+        // Calculate new height (inverse delta for bottom panel)
+        const newBottom = Math.max(0, prev.bottom - delta);
 
-.panel-collapse-btn:hover {
-  background: var(--bg-panel-alt);
-  color: var(--text-primary);
-  border-color: var(--border-strong);
-}
+        // Collapse if dragged below threshold
+        if (newBottom < COLLAPSE_THRESHOLD) {
+          onToggleBottom?.();
+          return { ...prev, bottom: 0 };
+        }
 
-.panel-content {
-  flex: 1;
-  overflow: auto;
-}
+        // Normal resize with minimum height
+        if (newBottom >= MIN_HEIGHT_BOTTOM) {
+          return { ...prev, bottom: newBottom };
+        }
 
-/* Activity Bar */
-.activity-bar {
-  width: 48px;
-  height: 100vh !important; /* Full viewport height */
-  background: var(--bg-panel);
-  border-right: 1px solid var(--border-subtle);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: var(--spacing-sm) 0;
-  gap: var(--spacing-xs);
-}
+        // Snap to minimum
+        return { ...prev, bottom: MIN_HEIGHT_BOTTOM };
+      });
+    },
+    [collapsedPanels.bottom, onToggleBottom],
+  );
 
-.activity-bar-main {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-}
+  const toggleLeftPanel = useCallback(() => {
+    onToggleLeft?.();
+  }, [onToggleLeft]);
 
-.activity-bar-controls {
-  margin-top: auto;
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-  padding-top: var(--spacing-md);
-  border-top: 1px solid var(--border-subtle);
-}
+  const toggleRightPanel = useCallback(() => {
+    onToggleRight?.();
+  }, [onToggleRight]);
 
-.activity-bar-icon {
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  background: transparent;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  position: relative;
-  transition: background 150ms;
-}
+  const toggleBottomPanel = useCallback(() => {
+    onToggleBottom?.();
+  }, [onToggleBottom]);
 
-.activity-bar-icon:hover {
-  background: var(--bg-panel-alt);
-}
+  const leftWidth = collapsedPanels.left ? 0 : widths.left;
+  const rightWidth = collapsedPanels.right ? 0 : widths.right;
+  const bottomHeight = collapsedPanels.bottom ? 0 : widths.bottom;
 
-.activity-bar-icon.active {
-  background: var(--bg-panel-alt);
-}
+  // Build dynamic grid template - hide collapsed columns entirely
+  const gridColumns = [
+    !collapsedPanels.left && `${leftWidth}px`,
+    !collapsedPanels.left && "auto", // left handle
+    "1fr", // center always visible
+    !collapsedPanels.right && "auto", // right handle
+    !collapsedPanels.right && `${rightWidth}px`,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
-.activity-bar-icon.active::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 8px;
-  bottom: 8px;
-  width: 2px;
-  background: var(--bool-blue);
-  border-radius: 0 2px 2px 0;
-}
+  return (
+    <div
+      className="resizable-layout-wrapper"
+      style={{
+        display: "grid",
+        gridTemplateRows: bottomHeight > 0 ? `1fr auto ${bottomHeight}px` : "1fr",
+        height: "100vh", // FIXED: Force full viewport height
+        width: "100vw",
+        overflow: "hidden",
+      }}
+    >
+      {/* TOP ROW - Three-column layout */}
+      <div
+        className="resizable-layout"
+        style={{
+          display: "grid",
+          gridTemplateColumns: gridColumns,
+          height: "100%",
+          overflow: "hidden",
+        }}
+      >
+        {/* LEFT PANEL + HANDLE (only if not collapsed) */}
+        {!collapsedPanels.left && (
+          <>
+            <div
+              className="resizable-panel left"
+              style={{
+                width: leftWidth,
+                height: "100vh", // FIXED: Full viewport height
+                overflow: "hidden",
+              }}
+            >
+              {leftPanel}
+            </div>
+            <ResizeHandle onDrag={handleLeftResize} onDoubleClick={toggleLeftPanel} />
+          </>
+        )}
 
-.activity-bar-icon .icon {
-  font-size: 24px;
-  line-height: 1;
+        {/* CENTER PANEL (always visible) */}
+        <div
+          className="resizable-panel center"
+          style={{
+            minWidth: MIN_WIDTH_CENTER,
+            height: "100vh", // FIXED: Full viewport height
+            overflow: "auto",
+          }}
+        >
+          {centerPanel}
+        </div>
+
+        {/* RIGHT PANEL + HANDLE (only if not collapsed) */}
+        {!collapsedPanels.right && (
+          <>
+            <ResizeHandle onDrag={handleRightResize} onDoubleClick={toggleRightPanel} />
+            <div
+              className="resizable-panel right"
+              style={{
+                width: rightWidth,
+                height: "100vh", // FIXED: Full viewport height
+                overflow: "hidden",
+              }}
+            >
+              {rightPanel}
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* BOTTOM PANEL RESIZE HANDLE */}
+      {bottomHeight > 0 && (
+        <ResizeHandle onDrag={handleBottomResize} onDoubleClick={toggleBottomPanel} orientation="horizontal" />
+      )}
+
+      {/* BOTTOM PANEL - Spans full width beneath center column only */}
+      {bottomHeight > 0 && (
+        <div
+          style={{
+            position: "relative",
+            overflow: "hidden",
+            display: "flex",
+            flexDirection: "column",
+            height: `${bottomHeight}px`,
+            // Calculate margins to align with center panel
+            marginLeft: !collapsedPanels.left ? `${leftWidth + 4}px` : "0",
+            marginRight: !collapsedPanels.right ? `${rightWidth + 4}px` : "0",
+          }}
+        >
+          <div
+            className="resizable-panel bottom"
+            style={{
+              flex: 1,
+              overflow: "hidden",
+            }}
+          >
+            {bottomPanel}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
