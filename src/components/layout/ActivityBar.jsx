@@ -27,6 +27,7 @@ export function ActivityBar({ items, activeItem, onItemClick, panelControls, col
                 label={control.label}
                 active={!isCollapsed}
                 onClick={() => onPanelControlClick(control.id)}
+                size={16}
               />
             );
           })}
@@ -36,7 +37,7 @@ export function ActivityBar({ items, activeItem, onItemClick, panelControls, col
   );
 }
 
-function ActivityBarIcon({ icon, label, active, onClick }) {
+function ActivityBarIcon({ icon, label, active, onClick, size = 20 }) {
   // For panel controls, icon is still a string (unicode)
   // For activity items, icon is a Lucide component name (e.g., "Boxes")
   const isLucideIcon = typeof icon === 'string' && icons[icon];
@@ -50,7 +51,7 @@ function ActivityBarIcon({ icon, label, active, onClick }) {
       title={label}
     >
       {LucideIcon ? (
-        <LucideIcon size={20} strokeWidth={2} />
+        <LucideIcon size={size} strokeWidth={2} />
       ) : (
         <span className="icon">{icon}</span>
       )}
