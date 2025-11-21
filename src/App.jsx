@@ -250,23 +250,23 @@ function saveState(state) {
   }
 }
 
+// Load state once to ensure migrations apply globally
+const initialState = loadState();
+
 export default function App() {
   const [fieldsCatalog, setFieldsCatalog] = useState(() => {
-    const saved = loadState();
-    return saved?.fieldsCatalog || [];
+    return initialState?.fieldsCatalog || [];
   });
   const [catalogMeta, setCatalogMeta] = useState(() => {
-    const saved = loadState();
-    return saved?.catalogMeta || null;
+    return initialState?.catalogMeta || null;
   });
   const [storageError, setStorageError] = useState(null);
   const [customFields, setCustomFields] = useState({});
   const [packages, setPackages] = useState(() => {
-    const saved = loadState();
-    return saved?.packages || [{ id: "pkg_01", name: "Package 01", collapsed: false }];
+    return initialState?.packages || [{ id: "pkg_01", name: "Package 01", collapsed: false }];
   });
   const [flows, setFlows] = useState(() => {
-    const saved = loadState();
+    const saved = initialState;
     let flowsData = saved?.flows || [{ 
       id: "flow_01", 
       name: "Flow 01", 
@@ -302,30 +302,24 @@ export default function App() {
     return flowsData;
   });
   const [activeFlowId, setActiveFlowId] = useState(() => {
-    const saved = loadState();
-    return saved?.activeFlowId || "flow_01";
+    return initialState?.activeFlowId || "flow_01";
   });
   
   // New state for Packager hierarchy
   const [sequences, setSequences] = useState(() => {
-    const saved = loadState();
-    return saved?.sequences || [];
+    return initialState?.sequences || [];
   });
   const [maps, setMaps] = useState(() => {
-    const saved = loadState();
-    return saved?.maps || [];
+    return initialState?.maps || [];
   });
   const [activeSequenceId, setActiveSequenceId] = useState(() => {
-    const saved = loadState();
-    return saved?.activeSequenceId || null;
+    return initialState?.activeSequenceId || null;
   });
   const [activeMapId, setActiveMapId] = useState(() => {
-    const saved = loadState();
-    return saved?.activeMapId || null;
+    return initialState?.activeMapId || null;
   });
   const [toolbarExpanded, setToolbarExpanded] = useState(() => {
-    const saved = loadState();
-    return saved?.toolbarExpanded !== undefined ? saved.toolbarExpanded : true;
+    return initialState?.toolbarExpanded !== undefined ? initialState.toolbarExpanded : true;
   });
   const [hideMapped, setHideMapped] = useState(false);
 
@@ -371,7 +365,7 @@ export default function App() {
   
   const [theme, setTheme] = useState(() => {
     const savedTheme = localStorage.getItem('bool_theme');
-    return savedTheme || 'dark';
+    return savedTheme || initialState?.theme || 'dark';
   });
   
   const [activeView, setActiveView] = useState('mappings'); // 'mappings' or 'catalog'
@@ -421,6 +415,26 @@ export default function App() {
 
   const activeFlow = flows.find(f => f.id === activeFlowId);
   const activeMap = maps.find(m => m.id === activeMapId);
+  
+  // Safety check: If we have an active flow but no active map, auto-select first map
+  useEffect(() => {
+    if (activeFlowId && !activeMapId) {
+      const flowMaps = maps.filter(m => m.flow_id === activeFlowId);
+      if (flowMaps.length > 0) {
+        setActiveMapId(flowMaps[0].id);
+      }
+    }
+  }, [activeFlowId, activeMapId, maps]);
+  
+  // Safety check: If we have an active sequence but no active flow, auto-select first flow
+  useEffect(() => {
+    if (activeSequenceId && !activeFlowId) {
+      const seqFlows = flows.filter(f => f.sequence_id === activeSequenceId);
+      if (seqFlows.length > 0) {
+        setActiveFlowId(seqFlows[0].id);
+      }
+    }
+  }, [activeSequenceId, activeFlowId, flows]);
 
   useEffect(() => {
     const result = saveState({
