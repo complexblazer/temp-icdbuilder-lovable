@@ -62,7 +62,7 @@
 .resize-handle.vertical {
   width: 4px;
   cursor: col-resize;
-  height: 100%;
+  align-self: stretch;
 }
 
 .resize-handle.horizontal {
