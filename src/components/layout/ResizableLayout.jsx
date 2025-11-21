@@ -159,8 +159,30 @@ export function ResizableLayout({
       {/* Bottom panel - BOUNDED by sidebars (spans left → right, not full width) */}
       {bottomHeight > 0 && (
         <>
-          {/* Resize handle spans full width for easy grabbing */}
-          <ResizeHandle onDrag={handleBottomResize} onDoubleClick={toggleBottomPanel} orientation="horizontal" />
+          {/* Resize handle row - only visible in center, invisible in sidebar areas */}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: `${leftWidth}px auto 1fr auto ${rightWidth}px`,
+              height: "4px",
+              overflow: "hidden",
+            }}
+          >
+            {/* Left sidebar space - no handle here */}
+            <div style={{ width: leftWidth, background: "var(--bg-sidebar)" }} />
+
+            {/* Left handle space - no handle here */}
+            <div style={{ width: "4px", background: "transparent" }} />
+
+            {/* Resize handle ONLY in center area */}
+            <ResizeHandle onDrag={handleBottomResize} onDoubleClick={toggleBottomPanel} orientation="horizontal" />
+
+            {/* Right handle space - no handle here */}
+            <div style={{ width: "4px", background: "transparent" }} />
+
+            {/* Right sidebar space - no handle here */}
+            <div style={{ width: rightWidth, background: "var(--bg-sidebar)" }} />
+          </div>
 
           {/* Bottom panel bounded by sidebar widths */}
           <div
