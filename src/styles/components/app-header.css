@@ -24,10 +24,10 @@
 }
 
 .nav-tab {
-  padding: var(--spacing-sm) var(--spacing-md);
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.3px;
   text-transform: uppercase;
   color: var(--text-secondary);
   background: transparent;
