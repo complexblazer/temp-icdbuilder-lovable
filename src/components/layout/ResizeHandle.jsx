@@ -7,7 +7,6 @@ export function ResizeHandle({ onDrag, onDoubleClick, orientation = "vertical" }
 
   useEffect(() => {
     if (!isDragging) {
-      // Cancel any pending animation frame when drag stops
       if (rafRef.current) {
         cancelAnimationFrame(rafRef.current);
         rafRef.current = null;
@@ -16,7 +15,9 @@ export function ResizeHandle({ onDrag, onDoubleClick, orientation = "vertical" }
     }
 
     const handleMouseMove = (e) => {
-      // Use requestAnimationFrame to throttle updates and ensure smooth dragging
+      e.preventDefault(); // ✅ Prevents browser drag interference
+      e.stopPropagation(); // ✅ Stops event bubbling
+      
       if (rafRef.current) {
         cancelAnimationFrame(rafRef.current);
       }
@@ -29,8 +30,10 @@ export function ResizeHandle({ onDrag, onDoubleClick, orientation = "vertical" }
       });
     };
 
-    const handleMouseUp = () => {
-      // Immediately cancel any pending frame
+    const handleMouseUp = (e) => {
+      e.preventDefault(); // ✅ Prevents default behavior
+      e.stopPropagation(); // ✅ Stops event bubbling
+      
       if (rafRef.current) {
         cancelAnimationFrame(rafRef.current);
         rafRef.current = null;
@@ -38,18 +41,17 @@ export function ResizeHandle({ onDrag, onDoubleClick, orientation = "vertical" }
       setIsDragging(false);
     };
 
-    // Add listeners to window to ensure we catch mouseup even if cursor leaves element
-    window.addEventListener("mousemove", handleMouseMove, { passive: false });
-    window.addEventListener("mouseup", handleMouseUp, { passive: false });
+    // ✅ Use capture phase for reliable event handling
+    window.addEventListener("mousemove", handleMouseMove, { passive: false, capture: true });
+    window.addEventListener("mouseup", handleMouseUp, { passive: false, capture: true });
 
     return () => {
-      // Clean up animation frame
       if (rafRef.current) {
         cancelAnimationFrame(rafRef.current);
         rafRef.current = null;
       }
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("mousemove", handleMouseMove, { capture: true });
+      window.removeEventListener("mouseup", handleMouseUp, { capture: true });
     };
   }, [isDragging, onDrag, orientation]);
 
@@ -65,6 +67,11 @@ export function ResizeHandle({ onDrag, onDoubleClick, orientation = "vertical" }
       className={`resize-handle ${orientation} ${isDragging ? "dragging" : ""}`}
       onMouseDown={handleMouseDown}
       onDoubleClick={onDoubleClick}
+      style={{
+        // ✅ Reduce repaints during drag
+        willChange: isDragging ? 'background' : 'auto',
+        userSelect: 'none', // ✅ Prevent text selection
+      }}
     />
   );
 }
