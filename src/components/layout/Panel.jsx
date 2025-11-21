@@ -1,3 +1,5 @@
+import React from 'react';
+
 export function Panel({ id, children, header, collapsible = false, collapsed = false, onCollapse }) {
   return (
     <div className={`panel ${collapsed ? 'collapsed' : ''}`} data-panel-id={id}>
