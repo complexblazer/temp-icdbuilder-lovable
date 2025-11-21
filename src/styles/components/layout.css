@@ -192,6 +192,13 @@
   padding-bottom: var(--spacing-xs);
 }
 
+.activity-bar-settings {
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--spacing-xs);
+  border-top: 1px solid var(--border-subtle);
+}
+
 .activity-bar-icon {
   width: 40px;
   height: 40px;
