@@ -23,32 +23,35 @@
 /* Tab Bar */
 .bottom-panel-tabs {
   display: flex;
-  gap: 2px;
-  padding: var(--spacing-xs) var(--spacing-sm);
+  gap: 4px;
+  padding: 8px 12px 0;
   background: var(--bg-panel-alt);
   border-bottom: 1px solid var(--border-subtle);
-  min-height: 40px;
+  min-height: 44px;
+  flex-shrink: 0;
 }
 
 .bottom-panel-tab {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-xs) var(--spacing-md);
+  gap: 8px;
+  padding: 8px 16px;
   background: transparent;
   border: none;
-  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  border-radius: 4px 4px 0 0;
   color: var(--text-secondary);
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.5px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
   cursor: pointer;
-  transition: all 150ms;
+  transition: all 150ms ease;
   position: relative;
+  border-bottom: 2px solid transparent;
 }
 
 .bottom-panel-tab:hover {
-  background: var(--bg-panel);
+  background: rgba(255, 255, 255, 0.05);
   color: var(--text-primary);
 }
 
@@ -56,6 +59,24 @@
   background: var(--bg-panel);
   color: var(--text-primary);
   border-bottom: 2px solid var(--bool-blue);
+}
+
+.bottom-panel-tab .system-badge {
+  padding: 2px 8px;
+  background: var(--bg-panel-alt);
+  border: 1px solid var(--border-subtle);
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+}
+
+.bottom-panel-tab.active .system-badge {
+  background: var(--bg-panel-primary);
+  border-color: var(--border-strong);
+  color: var(--text-secondary);
 }
 
 .bottom-panel-tab .tab-label {
@@ -90,9 +111,13 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  min-height: 0;
+  background: var(--bg-panel);
 }
 
 .bottom-panel-content .field-browser {
+  flex: 1;
   height: 100%;
   border: none;
+  overflow: auto;
 }

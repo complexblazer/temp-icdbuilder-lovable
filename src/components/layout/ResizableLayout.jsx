@@ -130,84 +130,102 @@ export function ResizableLayout({
       className="resizable-layout-wrapper"
       style={{
         display: "grid",
+        gridTemplateColumns: gridColumns,
         gridTemplateRows: bottomHeight > 0 ? `1fr auto ${bottomHeight}px` : "1fr",
-        flex: 1, // ✅ Take remaining space after ActivityBar
+        flex: 1,
         height: "100%",
         overflow: "hidden",
       }}
     >
-      {/* TOP ROW - Three-column layout */}
-      <div
-        className="resizable-layout"
-        style={{
-          display: "grid",
-          gridTemplateColumns: gridColumns,
-          height: "100%",
+      {/* LEFT PANEL - spans all rows */}
+      <div 
+        className="resizable-panel left" 
+        style={{ 
+          gridColumn: "1",
+          gridRow: "1 / -1",
+          width: leftWidth, 
           overflow: "hidden",
+          display: leftWidth === 0 ? 'none' : 'block'
         }}
       >
-        {/* LEFT PANEL - always rendered, visibility controlled by CSS */}
-        <div 
-          className="resizable-panel left" 
-          style={{ 
-            width: leftWidth, 
-            overflow: "hidden",
-            display: leftWidth === 0 ? 'none' : 'block'
-          }}
-        >
-          {leftWidth > 0 && leftPanel}
-        </div>
-
-        {/* LEFT HANDLE - always rendered */}
-        <ResizeHandle onDrag={handleLeftResize} onDoubleClick={toggleLeftPanel} />
-
-        {/* CENTER PANEL - always rendered */}
-        <div className="resizable-panel center" style={{ minWidth: MIN_WIDTH_CENTER, overflow: "auto" }}>
-          {centerPanel}
-        </div>
-
-        {/* RIGHT HANDLE - always rendered */}
-        <ResizeHandle onDrag={handleRightResize} onDoubleClick={toggleRightPanel} />
-
-        {/* RIGHT PANEL - always rendered, visibility controlled by CSS */}
-        <div 
-          className="resizable-panel right" 
-          style={{ 
-            width: rightWidth, 
-            overflow: "hidden",
-            display: rightWidth === 0 ? 'none' : 'block'
-          }}
-        >
-          {rightWidth > 0 && rightPanel}
-        </div>
+        {leftWidth > 0 && leftPanel}
       </div>
 
-      {/* BOTTOM PANEL RESIZE HANDLE - always rendered when bottom panel exists */}
+      {/* LEFT HANDLE - spans all rows */}
+      <ResizeHandle 
+        onDrag={handleLeftResize} 
+        onDoubleClick={toggleLeftPanel}
+        style={{
+          gridColumn: "2",
+          gridRow: "1 / -1",
+        }}
+      />
+
+      {/* CENTER PANEL - row 1 only */}
+      <div 
+        className="resizable-panel center" 
+        style={{ 
+          gridColumn: "3",
+          gridRow: "1",
+          minWidth: MIN_WIDTH_CENTER, 
+          overflow: "auto" 
+        }}
+      >
+        {centerPanel}
+      </div>
+
+      {/* RIGHT HANDLE - spans all rows */}
+      <ResizeHandle 
+        onDrag={handleRightResize} 
+        onDoubleClick={toggleRightPanel}
+        style={{
+          gridColumn: "4",
+          gridRow: "1 / -1",
+        }}
+      />
+
+      {/* RIGHT PANEL - spans all rows */}
+      <div 
+        className="resizable-panel right" 
+        style={{ 
+          gridColumn: "5",
+          gridRow: "1 / -1",
+          width: rightWidth, 
+          overflow: "hidden",
+          display: rightWidth === 0 ? 'none' : 'block'
+        }}
+      >
+        {rightWidth > 0 && rightPanel}
+      </div>
+
+      {/* HORIZONTAL RESIZE HANDLE - row 2, center column only */}
       {bottomPanel && (
         <ResizeHandle 
           onDrag={handleBottomResize} 
           onDoubleClick={toggleBottomPanel} 
           orientation="horizontal"
-          style={{ visibility: bottomHeight > 0 ? 'visible' : 'hidden' }}
+          style={{
+            gridColumn: "3",
+            gridRow: "2",
+            visibility: bottomHeight > 0 ? 'visible' : 'hidden'
+          }}
         />
       )}
 
-      {/* BOTTOM PANEL */}
+      {/* BOTTOM PANEL - row 3, center column only */}
       {bottomHeight > 0 && (
         <div
+          className="resizable-panel bottom"
           style={{
-            position: "relative",
+            gridColumn: "3",
+            gridRow: "3",
+            height: `${bottomHeight}px`,
             overflow: "hidden",
             display: "flex",
-            flexDirection: "column",
-            height: `${bottomHeight}px`,
-            marginLeft: !collapsedPanels.left ? `${leftWidth + 4}px` : "0",
-            marginRight: !collapsedPanels.right ? `${rightWidth + 4}px` : "0",
+            flexDirection: "column"
           }}
         >
-          <div className="resizable-panel bottom" style={{ flex: 1, overflow: "hidden" }}>
-            {bottomPanel}
-          </div>
+          {bottomPanel}
         </div>
       )}
     </div>
