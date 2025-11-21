@@ -119,9 +119,9 @@ export function ResizableLayout({
 
   const gridColumns = [
     !collapsedPanels.left && `${leftWidth}px`,
-    !collapsedPanels.left && "auto",
+    "auto", // ✅ Always include left handle column
     "1fr",
-    !collapsedPanels.right && "auto",
+    "auto", // ✅ Always include right handle column
     !collapsedPanels.right && `${rightWidth}px`,
   ]
     .filter(Boolean)
@@ -148,35 +148,40 @@ export function ResizableLayout({
           overflow: "hidden",
         }}
       >
-        {/* LEFT PANEL + HANDLE */}
+        {/* LEFT PANEL - conditionally rendered */}
         {!collapsedPanels.left && (
-          <>
-            <div className="resizable-panel left" style={{ width: leftWidth, overflow: "hidden" }}>
-              {leftPanel}
-            </div>
-            <ResizeHandle onDrag={handleLeftResize} onDoubleClick={toggleLeftPanel} />
-          </>
+          <div className="resizable-panel left" style={{ width: leftWidth, overflow: "hidden" }}>
+            {leftPanel}
+          </div>
         )}
 
-        {/* CENTER PANEL */}
+        {/* LEFT HANDLE - always rendered */}
+        <ResizeHandle onDrag={handleLeftResize} onDoubleClick={toggleLeftPanel} />
+
+        {/* CENTER PANEL - always rendered */}
         <div className="resizable-panel center" style={{ minWidth: MIN_WIDTH_CENTER, overflow: "auto" }}>
           {centerPanel}
         </div>
 
-        {/* RIGHT PANEL + HANDLE */}
+        {/* RIGHT HANDLE - always rendered */}
+        <ResizeHandle onDrag={handleRightResize} onDoubleClick={toggleRightPanel} />
+
+        {/* RIGHT PANEL - conditionally rendered */}
         {!collapsedPanels.right && (
-          <>
-            <ResizeHandle onDrag={handleRightResize} onDoubleClick={toggleRightPanel} />
-            <div className="resizable-panel right" style={{ width: rightWidth, overflow: "hidden" }}>
-              {rightPanel}
-            </div>
-          </>
+          <div className="resizable-panel right" style={{ width: rightWidth, overflow: "hidden" }}>
+            {rightPanel}
+          </div>
         )}
       </div>
 
-      {/* BOTTOM PANEL RESIZE HANDLE */}
-      {bottomHeight > 0 && (
-        <ResizeHandle onDrag={handleBottomResize} onDoubleClick={toggleBottomPanel} orientation="horizontal" />
+      {/* BOTTOM PANEL RESIZE HANDLE - always rendered when bottom panel exists */}
+      {bottomPanel && (
+        <ResizeHandle 
+          onDrag={handleBottomResize} 
+          onDoubleClick={toggleBottomPanel} 
+          orientation="horizontal"
+          style={{ visibility: bottomHeight > 0 ? 'visible' : 'hidden' }}
+        />
       )}
 
       {/* BOTTOM PANEL */}
