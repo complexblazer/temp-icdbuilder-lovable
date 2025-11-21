@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ResizableLayout } from "./ResizableLayout";
 import { ActivityBar } from "./ActivityBar";
+import { Header } from "./Header";
 import { activityItems, panelControlItems } from "./layout-presets";
 
 export function AppLayout({ flowsPanel, workspacePanel, fieldsPanel, bottomPanel }) {
@@ -30,10 +31,10 @@ export function AppLayout({ flowsPanel, workspacePanel, fieldsPanel, bottomPanel
   };
 
   return (
-    <div style={{ display: "flex", height: "100vh", width: "100vw" }}>
-      {" "}
-      {/* CRITICAL: Full height container */}
-      <ActivityBar
+    <div style={{ display: "flex", flexDirection: "column", height: "100vh", width: "100vw" }}>
+      <Header />
+      <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
+        <ActivityBar
         items={activityItems}
         activeItem={activePanel}
         onItemClick={setActivePanel}
@@ -52,6 +53,7 @@ export function AppLayout({ flowsPanel, workspacePanel, fieldsPanel, bottomPanel
         onToggleRight={toggleRightPanel}
         onToggleBottom={toggleBottomPanel}
       />
+      </div>
     </div>
   );
 }
