@@ -43,7 +43,14 @@ export function AppLayout({
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh", width: "100vw" }}>
+    <div style={{ 
+      display: "flex", 
+      flexDirection: "column", 
+      height: "100vh",
+      width: "100vw",
+      overflow: "hidden" 
+    }}>
+      {/* HEADER - Fixed 48px */}
       <Header 
         activeView={activeView}
         onViewChange={onViewChange}
@@ -52,26 +59,33 @@ export function AppLayout({
         theme={theme}
         onToggleTheme={onToggleTheme}
       />
-      <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
+      
+      {/* CONTENT - Flex remaining space */}
+      <div style={{ 
+        display: "flex", 
+        flex: 1,
+        overflow: "hidden",
+        minHeight: 0
+      }}>
         <ActivityBar
-        items={activityItems}
-        activeItem={activePanel}
-        onItemClick={setActivePanel}
-        panelControls={panelControlItems}
-        collapsedPanels={collapsedPanels}
-        onPanelControlClick={handlePanelControlClick}
-      />
-      <ResizableLayout
-        leftPanel={flowsPanel}
-        centerPanel={workspacePanel}
-        rightPanel={fieldsPanel}
-        bottomPanel={bottomPanel}
-        defaultWidths={{ left: 300, center: 800, right: 300, bottom: 250 }}
-        collapsedPanels={collapsedPanels}
-        onToggleLeft={toggleLeftPanel}
-        onToggleRight={toggleRightPanel}
-        onToggleBottom={toggleBottomPanel}
-      />
+          items={activityItems}
+          activeItem={activePanel}
+          onItemClick={setActivePanel}
+          panelControls={panelControlItems}
+          collapsedPanels={collapsedPanels}
+          onPanelControlClick={handlePanelControlClick}
+        />
+        <ResizableLayout
+          leftPanel={flowsPanel}
+          centerPanel={workspacePanel}
+          rightPanel={fieldsPanel}
+          bottomPanel={bottomPanel}
+          defaultWidths={{ left: 300, center: 800, right: 300, bottom: 250 }}
+          collapsedPanels={collapsedPanels}
+          onToggleLeft={toggleLeftPanel}
+          onToggleRight={toggleRightPanel}
+          onToggleBottom={toggleBottomPanel}
+        />
       </div>
     </div>
   );
