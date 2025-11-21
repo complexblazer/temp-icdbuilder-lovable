@@ -1,0 +1,332 @@
+/* ============================================
+   Workspace Header Component
+   Replaces .view-toggle-container
+   ============================================ */
+
+.workspace-header {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-panel-header);
+  border-bottom: 1px solid var(--border-medium);
+}
+
+/* Main row - always visible */
+.workspace-header-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md) var(--spacing-xl);
+  height: 8%;
+  min-height: 48px;
+}
+
+.workspace-header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  position: relative;
+}
+
+.workspace-header-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xs);
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.workspace-header-action-btn:hover:not(:disabled) {
+  background: var(--bg-panel);
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+}
+
+.workspace-header-action-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Collapsible toolbar */
+.workspace-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  padding: 0 var(--spacing-xl);
+  height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: all 300ms ease;
+  border-top: 1px solid transparent;
+}
+
+.workspace-toolbar.expanded {
+  height: 40px;
+  opacity: 1;
+  padding: var(--spacing-sm) var(--spacing-xl);
+  border-top-color: var(--border-subtle);
+}
+
+.workspace-toolbar-filter {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: 0.9rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.workspace-toolbar-filter:hover {
+  color: var(--text-primary);
+}
+
+.workspace-toolbar-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.workspace-toolbar-btn:hover:not(:disabled) {
+  background: var(--bg-panel);
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+}
+
+.workspace-toolbar-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ============================================
+   Hierarchy Picker Component
+   ============================================ */
+
+.hierarchy-picker {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex: 1;
+  min-width: 0;
+}
+
+.hierarchy-separator {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  user-select: none;
+}
+
+.hierarchy-dropdown {
+  position: relative;
+  min-width: 120px;
+}
+
+.hierarchy-dropdown.map-dropdown {
+  min-width: 100px;
+}
+
+.hierarchy-dropdown-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-xs);
+  width: 100%;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  text-align: left;
+}
+
+.hierarchy-dropdown-trigger:hover {
+  background: var(--bg-panel-alt);
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+}
+
+.hierarchy-dropdown-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hierarchy-dropdown-icon {
+  flex-shrink: 0;
+  transition: transform 200ms ease;
+}
+
+.hierarchy-dropdown-icon.open {
+  transform: rotate(180deg);
+}
+
+.hierarchy-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.hierarchy-dropdown-menu.map-menu {
+  min-width: 150px;
+  right: auto;
+}
+
+.hierarchy-dropdown-item {
+  display: block;
+  width: 100%;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: transparent;
+  border: none;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  text-align: left;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.hierarchy-dropdown-item:hover {
+  background: var(--bg-panel-alt);
+  color: var(--text-primary);
+}
+
+.hierarchy-dropdown-item.active {
+  background: var(--bg-panel-alt);
+  color: var(--bool-blue);
+  font-weight: var(--font-weight-semibold);
+}
+
+.hierarchy-dropdown-empty {
+  padding: var(--spacing-sm);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* Map list specific styles */
+.map-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.map-list-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.map-list-item:hover {
+  background: var(--bg-panel-alt);
+}
+
+.map-list-item.active {
+  background: var(--bg-panel-alt);
+}
+
+.map-list-item input[type="radio"] {
+  margin: 0;
+  cursor: pointer;
+}
+
+.map-number {
+  font-size: 0.9rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+}
+
+.map-list-item.active .map-number {
+  color: var(--bool-blue);
+  font-weight: var(--font-weight-semibold);
+}
+
+.map-status {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* ============================================
+   Context Menu
+   ============================================ */
+
+.context-menu-wrapper {
+  position: relative;
+}
+
+.context-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  min-width: 180px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  padding: var(--spacing-xs);
+}
+
+.context-menu-item {
+  display: block;
+  width: 100%;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-xs);
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  text-align: left;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.context-menu-item:hover {
+  background: var(--bg-panel-alt);
+  color: var(--text-primary);
+}
+
+.context-menu-item.danger {
+  color: var(--bool-red);
+}
+
+.context-menu-item.danger:hover {
+  background: rgba(255, 90, 99, 0.1);
+  color: var(--bool-red);
+}
+
+.context-menu-divider {
+  height: 1px;
+  background: var(--border-subtle);
+  margin: var(--spacing-xs) 0;
+}

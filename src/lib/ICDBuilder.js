@@ -118,13 +118,17 @@ export function exportBooEngineProfile(mappings, flowId) {
 
 export function exportWorkspace(state) {
   const workspace = {
-    version: "1.0",
+    version: "2.0",
     exported_at: new Date().toISOString(),
     packages: state.packages || [],
+    sequences: state.sequences || [],
     flows: state.flows || [],
+    maps: state.maps || [],
     fieldsCatalog: state.fieldsCatalog || [],
     catalogMeta: state.catalogMeta || null,
     activeFlowId: state.activeFlowId || null,
+    activeSequenceId: state.activeSequenceId || null,
+    activeMapId: state.activeMapId || null,
     theme: state.theme || 'dark',
   };
   const json = JSON.stringify(workspace, null, 2);
@@ -169,8 +173,8 @@ export function importWorkspaceFile(file, onSuccess, onError) {
       }
       
       // Version compatibility check
-      if (workspace.version !== '1.0') {
-        throw new Error(`Unsupported workspace version: ${workspace.version}. Expected 1.0`);
+      if (workspace.version !== '1.0' && workspace.version !== '2.0') {
+        throw new Error(`Unsupported workspace version: ${workspace.version}. Expected 1.0 or 2.0`);
       }
       
       // Validate structure
