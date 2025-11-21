@@ -19,7 +19,7 @@ export function Header({
       {/* Right: Actions */}
       <div className="header-actions">
         <button className="icon-button" onClick={onToggleTheme} title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`} aria-label="Toggle theme">
-          {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+          {theme === 'dark' ? <Sun size={18} strokeWidth={2} /> : <Moon size={18} strokeWidth={2} />}
         </button>
         
       </div>
