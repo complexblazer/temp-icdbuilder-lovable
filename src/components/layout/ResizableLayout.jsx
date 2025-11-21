@@ -118,14 +118,12 @@ export function ResizableLayout({
   const bottomHeight = collapsedPanels.bottom ? 0 : widths.bottom;
 
   const gridColumns = [
-    !collapsedPanels.left && `${leftWidth}px`,
-    "auto", // ✅ Always include left handle column
+    collapsedPanels.left ? '0px' : `${leftWidth}px`,
+    "auto",
     "1fr",
-    "auto", // ✅ Always include right handle column
-    !collapsedPanels.right && `${rightWidth}px`,
-  ]
-    .filter(Boolean)
-    .join(" ");
+    "auto",
+    collapsedPanels.right ? '0px' : `${rightWidth}px`,
+  ].join(" ");  // ✅ Fixed 5-column grid - always stable
 
   return (
     <div
