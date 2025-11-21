@@ -24,7 +24,6 @@
 /* Resizable Layout Wrapper - Inherit from parent flex container */
 .resizable-layout-wrapper {
   height: 100%;
-  width: 100%;
   overflow: hidden;
   display: grid;
 }
