@@ -1,3 +1,5 @@
+import React from 'react';
+
 export function ActivityBar({ items, activeItem, onItemClick, panelControls, collapsedPanels, onPanelControlClick }) {
   return (
     <div className="activity-bar">
