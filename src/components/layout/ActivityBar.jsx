@@ -1,19 +1,19 @@
-import React from 'react';
-import { icons } from 'lucide-react';
+import React from "react";
+import { icons } from "lucide-react";
 
-export function ActivityBar({ 
-  items, 
-  activeItem, 
-  onItemClick, 
-  panelControls, 
-  collapsedPanels, 
+export function ActivityBar({
+  items,
+  activeItem,
+  onItemClick,
+  panelControls,
+  collapsedPanels,
   onPanelControlClick,
-  onSettingsClick 
+  onSettingsClick,
 }) {
   return (
     <div className="activity-bar">
       <div className="activity-bar-main">
-        {items.map(item => (
+        {items.map((item) => (
           <ActivityBarIcon
             key={item.id}
             icon={item.icon}
@@ -23,11 +23,11 @@ export function ActivityBar({
           />
         ))}
       </div>
-      
+
       <div className="activity-bar-footer">
         {panelControls && (
           <div className="activity-bar-controls">
-            {panelControls.map(control => {
+            {panelControls.map((control) => {
               const isCollapsed = collapsedPanels?.[control.panel];
               return (
                 <ActivityBarIcon
@@ -42,16 +42,10 @@ export function ActivityBar({
             })}
           </div>
         )}
-        
+
         {onSettingsClick && (
           <div className="activity-bar-settings">
-            <ActivityBarIcon
-              icon="Settings"
-              label="Settings"
-              active={false}
-              onClick={onSettingsClick}
-              size={16}
-            />
+            <ActivityBarIcon icon="Bolt" label="Settings" active={false} onClick={onSettingsClick} size={16} />
           </div>
         )}
       </div>
@@ -62,21 +56,17 @@ export function ActivityBar({
 function ActivityBarIcon({ icon, label, active, onClick, size = 20 }) {
   // For panel controls, icon is still a string (unicode)
   // For activity items, icon is a Lucide component name (e.g., "Boxes")
-  const isLucideIcon = typeof icon === 'string' && icons[icon];
+  const isLucideIcon = typeof icon === "string" && icons[icon];
   const LucideIcon = isLucideIcon ? icons[icon] : null;
-  
+
   return (
     <button
-      className={`activity-bar-icon ${active ? 'active' : ''}`}
+      className={`activity-bar-icon ${active ? "active" : ""}`}
       onClick={onClick}
       aria-label={label}
       title={label}
     >
-      {LucideIcon ? (
-        <LucideIcon size={size} strokeWidth={2} />
-      ) : (
-        <span className="icon">{icon}</span>
-      )}
+      {LucideIcon ? <LucideIcon size={size} strokeWidth={2} /> : <span className="icon">{icon}</span>}
     </button>
   );
 }
