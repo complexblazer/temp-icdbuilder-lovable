@@ -18,7 +18,9 @@ export function AppLayout({
   onToggleTheme,
   // Module navigation
   activeModule,
-  onModuleChange
+  onModuleChange,
+  // Settings
+  onSettingsClick
 }) {
   const [collapsedPanels, setCollapsedPanels] = useState({
     left: false,
@@ -76,6 +78,7 @@ export function AppLayout({
           panelControls={panelControlItems}
           collapsedPanels={collapsedPanels}
           onPanelControlClick={handlePanelControlClick}
+          onSettingsClick={onSettingsClick}
         />
         <ResizableLayout
           leftPanel={flowsPanel}
