@@ -4,6 +4,7 @@ import { ResizeHandle } from "./ResizeHandle";
 const MIN_WIDTH_SIDE = 200;
 const MIN_WIDTH_CENTER = 400;
 const MIN_HEIGHT_BOTTOM = 150;
+const COLLAPSE_THRESHOLD = 50; // Drag within 50px of 0 = auto-collapse
 
 export function ResizableLayout({
   leftPanel,
@@ -18,26 +19,89 @@ export function ResizableLayout({
 }) {
   const [widths, setWidths] = useState(defaultWidths);
 
-  const handleLeftResize = useCallback((delta) => {
-    setWidths((prev) => {
-      const newLeft = Math.max(MIN_WIDTH_SIDE, prev.left + delta);
-      return { ...prev, left: newLeft };
-    });
-  }, []);
+  const handleLeftResize = useCallback(
+    (delta) => {
+      setWidths((prev) => {
+        const newLeft = Math.max(0, prev.left + delta); // Allow 0
 
-  const handleRightResize = useCallback((delta) => {
-    setWidths((prev) => {
-      const newRight = Math.max(MIN_WIDTH_SIDE, prev.right - delta);
-      return { ...prev, right: newRight };
-    });
-  }, []);
+        // Auto-collapse if dragged below threshold
+        if (newLeft < COLLAPSE_THRESHOLD && newLeft > 0) {
+          onToggleLeft?.();
+          return prev; // Keep previous width for when we expand again
+        }
 
-  const handleBottomResize = useCallback((delta) => {
-    setWidths((prev) => {
-      const newBottom = Math.max(MIN_HEIGHT_BOTTOM, prev.bottom - delta);
-      return { ...prev, bottom: newBottom };
-    });
-  }, []);
+        // Auto-expand if dragging from collapsed state
+        if (collapsedPanels.left && delta > 0) {
+          onToggleLeft?.();
+          return { ...prev, left: MIN_WIDTH_SIDE };
+        }
+
+        // Normal resize (respects minimum when expanded)
+        if (!collapsedPanels.left && newLeft < MIN_WIDTH_SIDE) {
+          return { ...prev, left: MIN_WIDTH_SIDE };
+        }
+
+        return { ...prev, left: newLeft };
+      });
+    },
+    [collapsedPanels.left, onToggleLeft],
+  );
+
+  const handleRightResize = useCallback(
+    (delta) => {
+      setWidths((prev) => {
+        const newRight = Math.max(0, prev.right - delta); // Allow 0
+
+        // Auto-collapse if dragged below threshold
+        if (newRight < COLLAPSE_THRESHOLD && newRight > 0) {
+          onToggleRight?.();
+          return prev; // Keep previous width for when we expand again
+        }
+
+        // Auto-expand if dragging from collapsed state
+        if (collapsedPanels.right && delta < 0) {
+          onToggleRight?.();
+          return { ...prev, right: MIN_WIDTH_SIDE };
+        }
+
+        // Normal resize (respects minimum when expanded)
+        if (!collapsedPanels.right && newRight < MIN_WIDTH_SIDE) {
+          return { ...prev, right: MIN_WIDTH_SIDE };
+        }
+
+        return { ...prev, right: newRight };
+      });
+    },
+    [collapsedPanels.right, onToggleRight],
+  );
+
+  const handleBottomResize = useCallback(
+    (delta) => {
+      setWidths((prev) => {
+        const newBottom = Math.max(0, prev.bottom - delta); // Allow 0
+
+        // Auto-collapse if dragged below threshold
+        if (newBottom < COLLAPSE_THRESHOLD && newBottom > 0) {
+          onToggleBottom?.();
+          return prev; // Keep previous width for when we expand again
+        }
+
+        // Auto-expand if dragging from collapsed state
+        if (collapsedPanels.bottom && delta < 0) {
+          onToggleBottom?.();
+          return { ...prev, bottom: MIN_HEIGHT_BOTTOM };
+        }
+
+        // Normal resize (respects minimum when expanded)
+        if (!collapsedPanels.bottom && newBottom < MIN_HEIGHT_BOTTOM) {
+          return { ...prev, bottom: MIN_HEIGHT_BOTTOM };
+        }
+
+        return { ...prev, bottom: newBottom };
+      });
+    },
+    [collapsedPanels.bottom, onToggleBottom],
+  );
 
   const toggleLeftPanel = useCallback(() => {
     onToggleLeft?.();
@@ -92,13 +156,13 @@ export function ResizableLayout({
         </div>
       </div>
 
-      {/* Bottom panel - centered between sidebars */}
+      {/* Bottom panel - BOUNDED by sidebars (spans left → right, not full width) */}
       {bottomHeight > 0 && (
         <>
-          {/* Resize handle spans full width */}
+          {/* Resize handle spans full width for easy grabbing */}
           <ResizeHandle onDrag={handleBottomResize} onDoubleClick={toggleBottomPanel} orientation="horizontal" />
 
-          {/* Bottom panel grid - matches top layout structure */}
+          {/* Bottom panel bounded by sidebar widths */}
           <div
             style={{
               display: "grid",
@@ -107,22 +171,22 @@ export function ResizableLayout({
               overflow: "hidden",
             }}
           >
-            {/* Empty space where left panel would be */}
-            <div style={{ width: leftWidth }} />
+            {/* Left sidebar space - BOTTOM PANEL STARTS AFTER THIS */}
+            <div style={{ width: leftWidth, background: "var(--bg-sidebar)" }} />
 
-            {/* Empty space where left handle would be */}
-            <div style={{ width: "4px" }} />
+            {/* Left handle space */}
+            <div style={{ width: "4px", background: "transparent" }} />
 
-            {/* Bottom panel content - only in center area */}
+            {/* Bottom panel content - BOUNDED between sidebars */}
             <div className="resizable-panel bottom" style={{ overflow: "hidden" }}>
               {bottomPanel}
             </div>
 
-            {/* Empty space where right handle would be */}
-            <div style={{ width: "4px" }} />
+            {/* Right handle space */}
+            <div style={{ width: "4px", background: "transparent" }} />
 
-            {/* Empty space where right panel would be */}
-            <div style={{ width: rightWidth }} />
+            {/* Right sidebar space - BOTTOM PANEL ENDS BEFORE THIS */}
+            <div style={{ width: rightWidth, background: "var(--bg-sidebar)" }} />
           </div>
         </>
       )}
