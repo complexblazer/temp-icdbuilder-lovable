@@ -3,40 +3,59 @@ import { useState, useRef, useEffect } from "react";
 export function ResizeHandle({ onDrag, onDoubleClick, orientation = "vertical" }) {
   const [isDragging, setIsDragging] = useState(false);
   const startPosRef = useRef(0);
+  const rafRef = useRef(null);
 
   useEffect(() => {
-    if (!isDragging) return;
+    if (!isDragging) {
+      // Cancel any pending animation frame when drag stops
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
+      return;
+    }
 
     const handleMouseMove = (e) => {
-      e.preventDefault();
-      e.stopPropagation();
+      // Use requestAnimationFrame to throttle updates and ensure smooth dragging
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
 
-      const currentPos = orientation === "vertical" ? e.clientX : e.clientY;
-      const delta = currentPos - startPosRef.current;
-      startPosRef.current = currentPos;
-      onDrag(delta);
+      rafRef.current = requestAnimationFrame(() => {
+        const currentPos = orientation === "vertical" ? e.clientX : e.clientY;
+        const delta = currentPos - startPosRef.current;
+        startPosRef.current = currentPos;
+        onDrag(delta);
+      });
     };
 
-    const handleMouseUp = (e) => {
-      e.preventDefault();
-      e.stopPropagation();
+    const handleMouseUp = () => {
+      // Immediately cancel any pending frame
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
       setIsDragging(false);
     };
 
-    // Use capture phase to ensure we get the event first
-    document.addEventListener("mousemove", handleMouseMove, { capture: true, passive: false });
-    document.addEventListener("mouseup", handleMouseUp, { capture: true, passive: false });
+    // Add listeners to window to ensure we catch mouseup even if cursor leaves element
+    window.addEventListener("mousemove", handleMouseMove, { passive: false });
+    window.addEventListener("mouseup", handleMouseUp, { passive: false });
 
     return () => {
-      document.removeEventListener("mousemove", handleMouseMove, { capture: true });
-      document.removeEventListener("mouseup", handleMouseUp, { capture: true });
+      // Clean up animation frame
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
     };
   }, [isDragging, onDrag, orientation]);
 
   const handleMouseDown = (e) => {
     e.preventDefault();
     e.stopPropagation();
-
     startPosRef.current = orientation === "vertical" ? e.clientX : e.clientY;
     setIsDragging(true);
   };

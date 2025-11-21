@@ -60,85 +60,69 @@ export function ResizableLayout({
       className="resizable-layout-wrapper"
       style={{
         display: "grid",
-        gridTemplateColumns: `${leftWidth}px auto 1fr auto ${rightWidth}px`,
         gridTemplateRows: bottomHeight > 0 ? `1fr auto ${bottomHeight}px` : "1fr",
         height: "100%",
         overflow: "hidden",
       }}
     >
-      {/* Row 1: Main content panels */}
+      {/* Top section with 3-panel layout */}
       <div
-        className="resizable-panel left"
+        className="resizable-layout"
         style={{
-          width: leftWidth,
+          display: "grid",
+          gridTemplateColumns: `${leftWidth}px auto 1fr auto ${rightWidth}px`,
+          height: "100%",
           overflow: "hidden",
-          gridColumn: "1",
-          gridRow: "1",
         }}
       >
-        {leftPanel}
+        <div className="resizable-panel left" style={{ width: leftWidth, overflow: "hidden" }}>
+          {leftPanel}
+        </div>
+
+        <ResizeHandle onDrag={handleLeftResize} onDoubleClick={toggleLeftPanel} />
+
+        <div className="resizable-panel center" style={{ minWidth: MIN_WIDTH_CENTER, overflow: "auto" }}>
+          {centerPanel}
+        </div>
+
+        <ResizeHandle onDrag={handleRightResize} onDoubleClick={toggleRightPanel} />
+
+        <div className="resizable-panel right" style={{ width: rightWidth, overflow: "hidden" }}>
+          {rightPanel}
+        </div>
       </div>
 
-      <ResizeHandle
-        onDrag={handleLeftResize}
-        onDoubleClick={toggleLeftPanel}
-        style={{ gridColumn: "2", gridRow: "1" }}
-      />
-
-      <div
-        className="resizable-panel center"
-        style={{
-          minWidth: MIN_WIDTH_CENTER,
-          overflow: "auto",
-          gridColumn: "3",
-          gridRow: "1",
-        }}
-      >
-        {centerPanel}
-      </div>
-
-      <ResizeHandle
-        onDrag={handleRightResize}
-        onDoubleClick={toggleRightPanel}
-        style={{ gridColumn: "4", gridRow: "1" }}
-      />
-
-      <div
-        className="resizable-panel right"
-        style={{
-          width: rightWidth,
-          overflow: "hidden",
-          gridColumn: "5",
-          gridRow: "1",
-        }}
-      >
-        {rightPanel}
-      </div>
-
-      {/* Row 2: Bottom panel resize handle (centered between sidebars) */}
+      {/* Bottom panel - centered between sidebars */}
       {bottomHeight > 0 && (
         <>
-          <ResizeHandle
-            onDrag={handleBottomResize}
-            onDoubleClick={toggleBottomPanel}
-            orientation="horizontal"
-            style={{
-              gridColumn: "3", // Only spans center column
-              gridRow: "2",
-            }}
-          />
+          {/* Resize handle spans full width */}
+          <ResizeHandle onDrag={handleBottomResize} onDoubleClick={toggleBottomPanel} orientation="horizontal" />
 
-          {/* Row 3: Bottom panel (centered between sidebars) */}
+          {/* Bottom panel grid - matches top layout structure */}
           <div
-            className="resizable-panel bottom"
             style={{
+              display: "grid",
+              gridTemplateColumns: `${leftWidth}px auto 1fr auto ${rightWidth}px`,
               height: bottomHeight,
               overflow: "hidden",
-              gridColumn: "3", // Only spans center column
-              gridRow: "3",
             }}
           >
-            {bottomPanel}
+            {/* Empty space where left panel would be */}
+            <div style={{ width: leftWidth }} />
+
+            {/* Empty space where left handle would be */}
+            <div style={{ width: "4px" }} />
+
+            {/* Bottom panel content - only in center area */}
+            <div className="resizable-panel bottom" style={{ overflow: "hidden" }}>
+              {bottomPanel}
+            </div>
+
+            {/* Empty space where right handle would be */}
+            <div style={{ width: "4px" }} />
+
+            {/* Empty space where right panel would be */}
+            <div style={{ width: rightWidth }} />
           </div>
         </>
       )}

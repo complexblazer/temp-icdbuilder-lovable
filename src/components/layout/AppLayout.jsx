@@ -1,37 +1,37 @@
-import { useState } from 'react';
-import { ResizableLayout } from './ResizableLayout';
-import { ActivityBar } from './ActivityBar';
-import { activityItems, panelControlItems } from './layout-presets';
+import { useState } from "react";
+import { ResizableLayout } from "./ResizableLayout";
+import { ActivityBar } from "./ActivityBar";
+import { activityItems, panelControlItems } from "./layout-presets";
 
 export function AppLayout({ flowsPanel, workspacePanel, fieldsPanel, bottomPanel }) {
-  const [activePanel, setActivePanel] = useState('flows');
+  const [activePanel, setActivePanel] = useState("flows");
   const [collapsedPanels, setCollapsedPanels] = useState({
     left: false,
     right: false,
-    bottom: false
+    bottom: false,
   });
 
   const toggleLeftPanel = () => {
-    setCollapsedPanels(prev => ({ ...prev, left: !prev.left }));
+    setCollapsedPanels((prev) => ({ ...prev, left: !prev.left }));
   };
 
   const toggleRightPanel = () => {
-    setCollapsedPanels(prev => ({ ...prev, right: !prev.right }));
+    setCollapsedPanels((prev) => ({ ...prev, right: !prev.right }));
   };
 
   const toggleBottomPanel = () => {
-    setCollapsedPanels(prev => ({ ...prev, bottom: !prev.bottom }));
+    setCollapsedPanels((prev) => ({ ...prev, bottom: !prev.bottom }));
   };
 
   const handlePanelControlClick = (panelId) => {
-    if (panelId === 'toggle-left') toggleLeftPanel();
-    if (panelId === 'toggle-right') toggleRightPanel();
-    if (panelId === 'toggle-bottom') toggleBottomPanel();
+    if (panelId === "toggle-left") toggleLeftPanel();
+    if (panelId === "toggle-right") toggleRightPanel();
+    if (panelId === "toggle-bottom") toggleBottomPanel();
   };
 
   return (
-    <div style={{ display: 'flex', height: '100vh', width: '100vw' }}>
-      <ActivityBar 
+    <div style={{ display: "flex", height: "100vh", width: "100vw" }}>
+      <ActivityBar
         items={activityItems}
         activeItem={activePanel}
         onItemClick={setActivePanel}
