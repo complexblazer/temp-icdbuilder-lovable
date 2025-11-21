@@ -23,9 +23,10 @@ export const layoutPresets = {
 };
 
 export const activityItems = [
-  { id: "flows", icon: "📦", label: "Flows" },
-  { id: "systems", icon: "🔌", label: "Systems" },
-  { id: "settings", icon: "⚙️", label: "Settings" },
+  { id: "packager", icon: "Boxes", label: "Packager" },
+  { id: "explorer", icon: "Waypoints", label: "Explorer" },
+  { id: "architect", icon: "Pyramid", label: "Architect" },
+  { id: "observer", icon: "Zap", label: "Observer" },
 ];
 
 export const panelControlItems = [

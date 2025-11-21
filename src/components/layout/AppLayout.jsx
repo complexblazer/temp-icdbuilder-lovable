@@ -15,9 +15,11 @@ export function AppLayout({
   activeFlow,
   packageName,
   theme,
-  onToggleTheme
+  onToggleTheme,
+  // Module navigation
+  activeModule,
+  onModuleChange
 }) {
-  const [activePanel, setActivePanel] = useState("flows");
   const [collapsedPanels, setCollapsedPanels] = useState({
     left: false,
     right: false,
@@ -69,8 +71,8 @@ export function AppLayout({
       }}>
         <ActivityBar
           items={activityItems}
-          activeItem={activePanel}
-          onItemClick={setActivePanel}
+          activeItem={activeModule}
+          onItemClick={onModuleChange}
           panelControls={panelControlItems}
           collapsedPanels={collapsedPanels}
           onPanelControlClick={handlePanelControlClick}
