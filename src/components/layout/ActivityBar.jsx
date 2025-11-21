@@ -1,7 +1,15 @@
 import React from 'react';
 import { icons } from 'lucide-react';
 
-export function ActivityBar({ items, activeItem, onItemClick, panelControls, collapsedPanels, onPanelControlClick }) {
+export function ActivityBar({ 
+  items, 
+  activeItem, 
+  onItemClick, 
+  panelControls, 
+  collapsedPanels, 
+  onPanelControlClick,
+  onSettingsClick 
+}) {
   return (
     <div className="activity-bar">
       <div className="activity-bar-main">
@@ -16,23 +24,35 @@ export function ActivityBar({ items, activeItem, onItemClick, panelControls, col
         ))}
       </div>
       
-      {panelControls && (
-        <div className="activity-bar-controls">
-          {panelControls.map(control => {
-            const isCollapsed = collapsedPanels?.[control.panel];
-            return (
-              <ActivityBarIcon
-                key={control.id}
-                icon={isCollapsed ? control.icon : control.iconCollapsed}
-                label={control.label}
-                active={!isCollapsed}
-                onClick={() => onPanelControlClick(control.id)}
-                size={16}
-              />
-            );
-          })}
-        </div>
-      )}
+      <div className="activity-bar-footer">
+        {panelControls && (
+          <div className="activity-bar-controls">
+            {panelControls.map(control => {
+              const isCollapsed = collapsedPanels?.[control.panel];
+              return (
+                <ActivityBarIcon
+                  key={control.id}
+                  icon={isCollapsed ? control.icon : control.iconCollapsed}
+                  label={control.label}
+                  active={!isCollapsed}
+                  onClick={() => onPanelControlClick(control.id)}
+                  size={16}
+                />
+              );
+            })}
+          </div>
+        )}
+        
+        {onSettingsClick && (
+          <ActivityBarIcon
+            icon="Settings"
+            label="Settings"
+            active={false}
+            onClick={onSettingsClick}
+            size={20}
+          />
+        )}
+      </div>
     </div>
   );
 }

@@ -168,7 +168,6 @@
   flex-direction: column;
   align-items: center;
   padding: var(--spacing-sm) 0;
-  gap: var(--spacing-xs);
 }
 
 .activity-bar-main {
@@ -177,13 +176,20 @@
   gap: var(--spacing-xs);
 }
 
-.activity-bar-controls {
+.activity-bar-footer {
   margin-top: auto;
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xs);
   padding-top: var(--spacing-md);
   border-top: 1px solid var(--border-subtle);
+}
+
+.activity-bar-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  padding-bottom: var(--spacing-xs);
 }
 
 .activity-bar-icon {

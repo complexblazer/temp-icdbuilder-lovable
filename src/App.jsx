@@ -10,6 +10,7 @@ import {
 import { arrayMove } from "@dnd-kit/sortable";
 import { AppLayout } from "./components/layout/AppLayout";
 import { BottomPanel } from "./components/layout/BottomPanel";
+import { SettingsModal } from "./components/SettingsModal";
 import FieldBrowser from "./components/FieldBrowser";
 import MappingTable from "./components/MappingTable";
 import CatalogTable from "./components/CatalogTable";
@@ -35,6 +36,7 @@ import "./styles/components/layout.css";
 import "./styles/components/bottom-panel.css";
 import "./styles/components/app-header.css";
 import "./styles/components/blank-canvas.css";
+import "./styles/components/settings-modal.css";
 
 function getSystemColor(system) {
   const sys = system.toLowerCase();
@@ -245,8 +247,7 @@ export default function App() {
   const [targetObject, setTargetObject] = useState("");
   const [sidebarSections, setSidebarSections] = useState({
     packages: false,
-    flows: false,
-    data: false
+    flows: false
   });
   const [bottomPanel, setBottomPanel] = useState(() => {
     const saved = localStorage.getItem('bool_bottom_panel');
@@ -275,6 +276,8 @@ export default function App() {
     exports: false,
     issues: false
   });
+  
+  const [settingsModalOpen, setSettingsModalOpen] = useState(false);
   
   const [theme, setTheme] = useState(() => {
     const savedTheme = localStorage.getItem('bool_theme');
@@ -888,128 +891,9 @@ export default function App() {
                 type="button"
                 className="sidebar-add-flow-btn"
                 onClick={handleAddPackage}
-                style={{ marginTop: '8px' }}
               >
                 ⊕ Add Package
               </button>
-            </div>
-          )}
-        </div>
-
-        {/* DATA SECTION */}
-        <div className="sidebar-section-container">
-          <div 
-            className="sidebar-section-header"
-            onClick={() => setSidebarSections(prev => ({ ...prev, data: !prev.data }))}
-          >
-            <span className="nav-chevron">{sidebarSections.data ? '▾' : '▸'}</span>
-            <span>DATA</span>
-          </div>
-          {sidebarSections.data && (
-            <div className="sidebar-section-body">
-              {/* IMPORTS Subsection */}
-              <div 
-                className="sidebar-nav-item"
-                onClick={() => setDataSubsections(prev => ({ ...prev, imports: !prev.imports }))}
-              >
-                <span className="nav-chevron">{dataSubsections.imports ? '▾' : '▸'}</span>
-                <span>IMPORTS</span>
-              </div>
-              {dataSubsections.imports && (
-                <div>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept=".csv,text/csv"
-                    onChange={handleCatalogUpload}
-                    style={{ display: 'none' }}
-                  />
-                  <button
-                    type="button"
-                    className="sidebar-nav-subitem"
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    <span className="data-item-icon">↓</span>
-                    <span>Load fields catalog</span>
-                  </button>
-                  <input
-                    ref={workspaceInputRef}
-                    type="file"
-                    accept=".json,application/json"
-                    onChange={handleImportWorkspace}
-                    style={{ display: 'none' }}
-                  />
-                  <button
-                    type="button"
-                    className="sidebar-nav-subitem"
-                    onClick={() => workspaceInputRef.current?.click()}
-                  >
-                    <span className="data-item-icon">↓</span>
-                    <span>Import workspace</span>
-                  </button>
-                </div>
-              )}
-
-              {/* EXPORTS Subsection */}
-              <div 
-                className="sidebar-nav-item"
-                onClick={() => setDataSubsections(prev => ({ ...prev, exports: !prev.exports }))}
-              >
-                <span className="nav-chevron">{dataSubsections.exports ? '▾' : '▸'}</span>
-                <span>EXPORTS</span>
-              </div>
-              {dataSubsections.exports && (
-                <div>
-                  <button
-                    type="button"
-                    className="sidebar-nav-subitem"
-                    onClick={() => exportMappingsCsv(activeFlow?.mappings || [])}
-                  >
-                    <span className="data-item-icon">↑</span>
-                    <span>ICD CSV</span>
-                  </button>
-                  <button
-                    type="button"
-                    className="sidebar-nav-subitem"
-                    onClick={() => exportDataContractJson(activeFlow?.mappings || [], activeFlowId)}
-                  >
-                    <span className="data-item-icon">↑</span>
-                    <span>JSON Contract</span>
-                  </button>
-                  <button
-                    type="button"
-                    className="sidebar-nav-subitem"
-                    onClick={() => exportBooEngineProfile(activeFlow?.mappings || [], activeFlowId)}
-                  >
-                    <span className="data-item-icon">↑</span>
-                    <span>BOO Profile</span>
-                  </button>
-                  <button
-                    type="button"
-                    className="sidebar-nav-subitem"
-                    onClick={handleExportWorkspace}
-                  >
-                    <span className="data-item-icon">↑</span>
-                    <span>Export workspace</span>
-                  </button>
-                </div>
-              )}
-
-              {/* ISSUES Subsection */}
-              <div 
-                className="sidebar-nav-item"
-                onClick={() => setDataSubsections(prev => ({ ...prev, issues: !prev.issues }))}
-              >
-                <span className="nav-chevron">{dataSubsections.issues ? '▾' : '▸'}</span>
-                <span>ISSUES</span>
-              </div>
-              {dataSubsections.issues && (
-                <div>
-                  <div className="placeholder-content">
-                    No issues detected
-                  </div>
-                </div>
-              )}
             </div>
           )}
         </div>
@@ -1583,6 +1467,7 @@ export default function App() {
         packageName={packages.find(p => p.id === activeFlow?.package_id)?.name}
         theme={theme}
         onToggleTheme={toggleTheme}
+        onSettingsClick={() => setSettingsModalOpen(true)}
         bottomPanel={
           <BottomPanel
             activeBrowsers={bottomPanel.activeBrowsers}
@@ -1617,6 +1502,23 @@ export default function App() {
         onClose={() => setImportModalOpen(false)}
         onConfirm={handleConfirmCatalogImport}
         conflictCount={conflictCount}
+      />
+      
+      <SettingsModal
+        isOpen={settingsModalOpen}
+        onClose={() => setSettingsModalOpen(false)}
+        dataSubsections={dataSubsections}
+        setDataSubsections={setDataSubsections}
+        fileInputRef={fileInputRef}
+        workspaceInputRef={workspaceInputRef}
+        handleCatalogUpload={handleCatalogUpload}
+        handleImportWorkspace={handleImportWorkspace}
+        exportMappingsCsv={exportMappingsCsv}
+        exportDataContractJson={exportDataContractJson}
+        exportBooEngineProfile={exportBooEngineProfile}
+        handleExportWorkspace={handleExportWorkspace}
+        activeFlow={activeFlow}
+        activeFlowId={activeFlowId}
       />
     </DndContext>
   );
