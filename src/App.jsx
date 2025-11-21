@@ -19,6 +19,7 @@ import { parseCsvFile } from "./lib/csv";
 import { exportMappingsCsv, exportDataContractJson, exportBooEngineProfile, exportWorkspace, importWorkspaceFile } from "./lib/ICDBuilder";
 import { IconButton } from "./components/primitives";
 import { BlankCanvas } from './components/workspace/BlankCanvas';
+import { WorkspaceHeader } from './components/workspace/WorkspaceHeader';
 import { Waypoints, Pyramid, Zap } from 'lucide-react';
 
 // CSS imports - Theme system first, then app.css (legacy), then component styles
@@ -37,6 +38,7 @@ import "./styles/components/bottom-panel.css";
 import "./styles/components/app-header.css";
 import "./styles/components/blank-canvas.css";
 import "./styles/components/settings-modal.css";
+import "./styles/components/workspace-header.css";
 
 function getSystemColor(system) {
   const sys = system.toLowerCase();
@@ -157,6 +159,71 @@ function loadState() {
         };
       }
       
+      // AUTO-MIGRATION: Create default sequences for flows without sequence_id
+      if (state.flows && !state.sequences) {
+        const sequencesByPackage = new Map();
+        
+        state.flows.forEach(flow => {
+          if (!flow.sequence_id) {
+            const pkgId = flow.package_id;
+            const key = pkgId;
+            
+            if (!sequencesByPackage.has(key)) {
+              const sourceSystem = flow.source?.system || flow.source_system || 'Unknown';
+              const targetSystem = flow.target?.system || flow.target_system || 'Unknown';
+              
+              sequencesByPackage.set(key, {
+                id: `seq_${Date.now()}_${pkgId}`,
+                name: `${sourceSystem} → ${targetSystem}`,
+                package_id: pkgId,
+                trigger: 'manual',
+                status: 'active',
+                flows: [],
+                metadata: {
+                  created_at: new Date().toISOString()
+                }
+              });
+            }
+            
+            const seq = sequencesByPackage.get(key);
+            seq.flows.push(flow.id);
+            flow.sequence_id = seq.id;
+          }
+        });
+        
+        state.sequences = Array.from(sequencesByPackage.values());
+      }
+      
+      // AUTO-MIGRATION: Migrate flow.mappings to Map entities
+      if (state.flows && !state.maps) {
+        state.maps = [];
+        
+        state.flows.forEach(flow => {
+          if (flow.mappings && flow.mappings.length > 0) {
+            const mapId = `map_${Date.now()}_${flow.id}`;
+            
+            // Add map_id to each mapping row
+            const migratedMappings = flow.mappings.map(row => ({
+              ...row,
+              map_id: mapId
+            }));
+            
+            state.maps.push({
+              id: mapId,
+              name: 'Map 01',
+              flow_id: flow.id,
+              mappings: migratedMappings,
+              status: 'active',
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            });
+            
+            // Remove mappings from flow
+            delete flow.mappings;
+          }
+        });
+      }
+      
       return state;
     }
   } catch (err) {
@@ -238,6 +305,29 @@ export default function App() {
     const saved = loadState();
     return saved?.activeFlowId || "flow_01";
   });
+  
+  // New state for Packager hierarchy
+  const [sequences, setSequences] = useState(() => {
+    const saved = loadState();
+    return saved?.sequences || [];
+  });
+  const [maps, setMaps] = useState(() => {
+    const saved = loadState();
+    return saved?.maps || [];
+  });
+  const [activeSequenceId, setActiveSequenceId] = useState(() => {
+    const saved = loadState();
+    return saved?.activeSequenceId || null;
+  });
+  const [activeMapId, setActiveMapId] = useState(() => {
+    const saved = loadState();
+    return saved?.activeMapId || null;
+  });
+  const [toolbarExpanded, setToolbarExpanded] = useState(() => {
+    const saved = loadState();
+    return saved?.toolbarExpanded !== undefined ? saved.toolbarExpanded : true;
+  });
+  const [hideMapped, setHideMapped] = useState(false);
 
   const [showAllFlows, setShowAllFlows] = useState(false);
   const [editingFlowId, setEditingFlowId] = useState(null);
@@ -330,12 +420,18 @@ export default function App() {
   );
 
   const activeFlow = flows.find(f => f.id === activeFlowId);
+  const activeMap = maps.find(m => m.id === activeMapId);
 
   useEffect(() => {
     const result = saveState({
       packages,
       flows,
+      sequences,
+      maps,
       activeFlowId,
+      activeSequenceId,
+      activeMapId,
+      toolbarExpanded,
       fieldsCatalog,
       catalogMeta
     });
@@ -349,7 +445,7 @@ export default function App() {
     } else {
       setStorageError(null);
     }
-  }, [packages, flows, activeFlowId, fieldsCatalog, catalogMeta]);
+  }, [packages, flows, sequences, maps, activeFlowId, activeSequenceId, activeMapId, toolbarExpanded, fieldsCatalog, catalogMeta]);
 
   useEffect(() => {
     setSourceObject("");
@@ -357,11 +453,12 @@ export default function App() {
   }, [activeFlowId, activeFlow?.source_system, activeFlow?.target_system]);
   const allFields = [...fieldsCatalog, ...(customFields[activeFlowId] || [])];
   
+  const currentMappings = activeMap?.mappings || [];
   const usedSourceFieldIds = new Set(
-    activeFlow?.mappings.filter(m => m.source).map(m => m.source.id) || []
+    currentMappings.filter(m => m.source).map(m => m.source.id)
   );
   const usedTargetFieldIds = new Set(
-    activeFlow?.mappings.filter(m => m.target).map(m => m.target.id) || []
+    currentMappings.filter(m => m.target).map(m => m.target.id)
   );
 
   const handleCatalogUpload = async (e) => {
@@ -630,10 +727,14 @@ export default function App() {
   const handleExportWorkspace = () => {
     exportWorkspace({
       packages,
+      sequences,
       flows,
+      maps,
       fieldsCatalog,
       catalogMeta,
       activeFlowId,
+      activeSequenceId,
+      activeMapId,
       theme
     });
   };
@@ -902,9 +1003,14 @@ export default function App() {
   }
 
   /**
-   * Packager workspace content (existing mapping/catalog view)
+   * Packager workspace content (using new WorkspaceHeader)
    */
   function renderPackagerWorkspace() {
+    // Filter mappings by hideMapped if enabled
+    const displayMappings = hideMapped
+      ? currentMappings.filter(row => !row.source || !row.target)
+      : currentMappings;
+    
     return (
       <>
         {catalogMeta && (
@@ -934,47 +1040,94 @@ export default function App() {
           </div>
         )}
 
-        <div className="view-toggle-container">
-          <button
-            className={`view-toggle-btn ${activeView === 'mappings' ? 'active' : ''}`}
-            onClick={() => setActiveView('mappings')}
-          >
-            Mappings
-          </button>
-          <button
-            className={`view-toggle-btn ${activeView === 'catalog' ? 'active' : ''}`}
-            onClick={() => setActiveView('catalog')}
-            disabled={!fieldsCatalog || fieldsCatalog.length === 0}
-            title={(!fieldsCatalog || fieldsCatalog.length === 0) ? "No catalog loaded" : "View catalog"}
-          >
-            Catalog
-          </button>
-        </div>
-
-        {activeView === 'mappings' ? (
-          <MappingTable
-            mappings={activeFlow?.mappings || []}
-            onUpdate={(updated) => updateActiveMappings(updated)}
-            onRemove={(idx) =>
-              updateActiveMappings(mappings => mappings.filter((_, i) => i !== idx))
+        <WorkspaceHeader
+          packages={packages}
+          sequences={sequences}
+          flows={flows}
+          maps={maps}
+          activePackageId={activeFlow?.package_id || null}
+          activeSequenceId={activeSequenceId}
+          activeFlowId={activeFlowId}
+          activeMapId={activeMapId}
+          onPackageChange={(pkgId) => {
+            // When package changes, find first sequence in that package
+            const firstSeq = sequences.find(s => s.package_id === pkgId);
+            if (firstSeq) {
+              setActiveSequenceId(firstSeq.id);
+              const firstFlow = flows.find(f => f.sequence_id === firstSeq.id);
+              if (firstFlow) {
+                setActiveFlowId(firstFlow.id);
+                const firstMap = maps.find(m => m.flow_id === firstFlow.id);
+                if (firstMap) setActiveMapId(firstMap.id);
+              }
             }
+          }}
+          onSequenceChange={(seqId) => {
+            setActiveSequenceId(seqId);
+            const firstFlow = flows.find(f => f.sequence_id === seqId);
+            if (firstFlow) {
+              setActiveFlowId(firstFlow.id);
+              const firstMap = maps.find(m => m.flow_id === firstFlow.id);
+              if (firstMap) setActiveMapId(firstMap.id);
+            }
+          }}
+          onFlowChange={(flowId) => {
+            setActiveFlowId(flowId);
+            const firstMap = maps.find(m => m.flow_id === flowId);
+            if (firstMap) setActiveMapId(firstMap.id);
+          }}
+          onMapChange={setActiveMapId}
+          toolbarExpanded={toolbarExpanded}
+          onToggleToolbar={() => setToolbarExpanded(!toolbarExpanded)}
+          hideMapped={hideMapped}
+          onToggleHideMapped={setHideMapped}
+          onSaveMap={handleSaveMap}
+          onSaveMapAs={handleSaveMapAs}
+          onDeleteMap={handleDeleteMap}
+          onNewRow={handleAddMappingRow}
+        />
+
+        {/* Empty state */}
+        {!activeMap && (
+          <div style={{ 
+            padding: '40px', 
+            textAlign: 'center', 
+            color: 'var(--text-muted)' 
+          }}>
+            <p>Select a map to begin configuring field mappings</p>
+          </div>
+        )}
+
+        {/* MappingTable (no header) */}
+        {activeMap && (
+          <MappingTable
+            mapId={activeMapId}
+            mappings={displayMappings}
+            onUpdate={(newMappings) => {
+              setMaps(maps.map(m =>
+                m.id === activeMapId
+                  ? { ...m, mappings: newMappings, updated_at: new Date().toISOString() }
+                  : m
+              ));
+            }}
+            onRemove={(idx) => {
+              const updated = displayMappings.filter((_, i) => i !== idx);
+              setMaps(maps.map(m =>
+                m.id === activeMapId
+                  ? { ...m, mappings: updated, updated_at: new Date().toISOString() }
+                  : m
+              ));
+            }}
             sourceSystem={activeFlow?.source_system || ""}
             targetSystem={activeFlow?.target_system || ""}
             availableFields={allFields}
             onCreateCustomField={handleCreateCustomField}
             packageName={packages.find(p => p.id === activeFlow?.package_id)?.name}
             flowName={activeFlow?.name}
-            showAllFlows={showAllFlows}
-            onToggleShowAll={() => setShowAllFlows(!showAllFlows)}
+            showAllFlows={false}
+            onToggleShowAll={() => {}}
             allFlows={flows}
             packages={packages}
-          />
-        ) : (
-          <CatalogTable
-            catalog={fieldsCatalog}
-            catalogMeta={catalogMeta}
-            onUpdateField={handleUpdateCatalogField}
-            onDeleteField={handleDeleteCatalogField}
           />
         )}
       </>
@@ -990,14 +1143,18 @@ export default function App() {
       (workspace) => {
         // Restore all workspace data
         if (workspace.packages) setPackages(workspace.packages);
+        if (workspace.sequences) setSequences(workspace.sequences);
         if (workspace.flows) setFlows(workspace.flows);
+        if (workspace.maps) setMaps(workspace.maps);
         if (workspace.fieldsCatalog) setFieldsCatalog(workspace.fieldsCatalog);
         if (workspace.catalogMeta) setCatalogMeta(workspace.catalogMeta);
         if (workspace.activeFlowId) setActiveFlowId(workspace.activeFlowId);
+        if (workspace.activeSequenceId) setActiveSequenceId(workspace.activeSequenceId);
+        if (workspace.activeMapId) setActiveMapId(workspace.activeMapId);
         if (workspace.theme) setTheme(workspace.theme);
         
         alert('Workspace imported successfully!');
-        setActiveView('mappings');
+      },
       },
       (error) => {
         alert(`Failed to import workspace: ${error}`);
@@ -1075,6 +1232,117 @@ export default function App() {
   const handleUpdateFlowConfig = (flowId, field, value) => {
     setFlows(prev => prev.map(f => f.id === flowId ? {...f, [field]: value} : f));
   };
+
+  // ========== SEQUENCE CRUD OPERATIONS ==========
+  const handleAddSequence = (packageId) => {
+    const newSeq = {
+      id: `seq_${Date.now()}`,
+      name: `New Sequence`,
+      package_id: packageId,
+      trigger: 'manual',
+      status: 'draft',
+      flows: [],
+      metadata: { created_at: new Date().toISOString() }
+    };
+    setSequences([...sequences, newSeq]);
+    setActiveSequenceId(newSeq.id);
+  };
+
+  const handleUpdateSequenceName = (sequenceId, newName) => {
+    setSequences(sequences.map(seq =>
+      seq.id === sequenceId ? { ...seq, name: newName } : seq
+    ));
+  };
+
+  const handleDeleteSequence = (sequenceId) => {
+    const flowsToDelete = flows.filter(f => f.sequence_id === sequenceId);
+    if (flowsToDelete.length > 0) {
+      if (!window.confirm(`Delete sequence and ${flowsToDelete.length} flow(s)?`)) return;
+    }
+    
+    // Delete associated flows and maps
+    flowsToDelete.forEach(flow => {
+      const mapsToDelete = maps.filter(m => m.flow_id === flow.id);
+      setMaps(maps.filter(m => m.flow_id !== flow.id));
+    });
+    setFlows(flows.filter(f => f.sequence_id !== sequenceId));
+    setSequences(sequences.filter(s => s.id !== sequenceId));
+    if (activeSequenceId === sequenceId) setActiveSequenceId(null);
+  };
+
+  // ========== MAP CRUD OPERATIONS ==========
+  const handleAddMap = (flowId) => {
+    const existingMaps = maps.filter(m => m.flow_id === flowId);
+    const mapNumber = existingMaps.length + 1;
+    
+    const newMap = {
+      id: `map_${Date.now()}_${flowId}`,
+      name: `Map ${String(mapNumber).padStart(2, '0')}`,
+      flow_id: flowId,
+      mappings: [],
+      status: 'draft',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+    
+    setMaps([...maps, newMap]);
+    setActiveMapId(newMap.id);
+  };
+
+  const handleSaveMap = () => {
+    setMaps(maps.map(m =>
+      m.id === activeMapId
+        ? { ...m, status: 'active', updated_at: new Date().toISOString() }
+        : m
+    ));
+  };
+
+  const handleSaveMapAs = (newName) => {
+    const currentMap = maps.find(m => m.id === activeMapId);
+    if (!currentMap) return;
+    
+    const newMap = {
+      ...currentMap,
+      id: `map_${Date.now()}_${currentMap.flow_id}`,
+      name: newName,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+    
+    setMaps([...maps, newMap]);
+    setActiveMapId(newMap.id);
+  };
+
+  const handleDeleteMap = (mapId) => {
+    const map = maps.find(m => m.id === mapId);
+    if (!window.confirm(`Delete "${map?.name}" and all its mappings?`)) return;
+    
+    setMaps(maps.filter(m => m.id !== mapId));
+    if (activeMapId === mapId) {
+      const otherMap = maps.find(m => m.flow_id === map?.flow_id && m.id !== mapId);
+      setActiveMapId(otherMap?.id || null);
+    }
+  };
+
+  const handleAddMappingRow = () => {
+    if (!activeMapId) return;
+    
+    const newRow = {
+      id: `row_${Date.now()}`,
+      map_id: activeMapId,
+      source: null,
+      target: null,
+      shared: { human_name: '', transform: '', notes: '' }
+    };
+    
+    setMaps(maps.map(m =>
+      m.id === activeMapId
+        ? { ...m, mappings: [...m.mappings, newRow], updated_at: new Date().toISOString() }
+        : m
+    ));
+  };
+
+  const handlePackageRename = (pkgId, newName) => handleUpdatePackageName(pkgId, newName);
 
   const handleAddPackage = () => {
     setPackages(prev => {

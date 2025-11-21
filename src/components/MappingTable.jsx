@@ -573,61 +573,6 @@ export default function MappingTable({ mappings, onUpdate, onRemove, sourceSyste
 
   return (
     <div className="panel mapping-panel">
-      <div className="mapper-panel-header">
-        <div className="header-title-group">
-          <h1>MAPPER</h1>
-          {packageName && flowName && !showAllFlows && (
-            <span className="breadcrumb">{packageName} &gt; {flowName}</span>
-          )}
-          {showAllFlows && (
-            <span className="breadcrumb">All Flows</span>
-          )}
-          <button
-            className="show-all-toggle"
-            onClick={onToggleShowAll}
-            title={showAllFlows ? "Show active flow only" : "Show all flows"}
-          >
-            {showAllFlows ? "☑" : "○"} Show All
-          </button>
-          <button
-            className="show-all-toggle"
-            onClick={() => setHideMapped(!hideMapped)}
-            title={hideMapped ? "Show all mappings" : "Hide completed mappings"}
-          >
-            {hideMapped ? "☑" : "○"} Hide Mapped
-          </button>
-        </div>
-        <div className="mapping-actions">
-          <button
-            className="mapping-action-btn"
-            onClick={() => {
-              const newRow = {
-                id: `row-${Date.now()}`,
-                source: null,
-                target: null,
-                shared: { human_name: "", transform: "", notes: "" },
-              };
-              onUpdate([...mappings, newRow]);
-            }}
-            title="Create new mapping row"
-            disabled={showAllFlows}
-          >
-            + New
-          </button>
-          <button
-            className="mapping-action-btn delete-all-btn"
-            onClick={() => {
-              if (mappings.length > 0 && window.confirm(`Delete all ${mappings.length} mapping(s)?`)) {
-                onUpdate([]);
-              }
-            }}
-            disabled={mappings.length === 0 || showAllFlows}
-            title="Delete all mappings"
-          >
-            × Clear
-          </button>
-        </div>
-      </div>
       <div className="panel-body">
         <div ref={setTableRef} className={isTableOver ? 'table-drag-over' : ''}>
           <table className="mapping-table">
