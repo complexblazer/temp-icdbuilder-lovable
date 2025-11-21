@@ -146,12 +146,17 @@ export function ResizableLayout({
           overflow: "hidden",
         }}
       >
-        {/* LEFT PANEL - conditionally rendered */}
-        {!collapsedPanels.left && (
-          <div className="resizable-panel left" style={{ width: leftWidth, overflow: "hidden" }}>
-            {leftPanel}
-          </div>
-        )}
+        {/* LEFT PANEL - always rendered, visibility controlled by CSS */}
+        <div 
+          className="resizable-panel left" 
+          style={{ 
+            width: leftWidth, 
+            overflow: "hidden",
+            display: leftWidth === 0 ? 'none' : 'block'
+          }}
+        >
+          {leftWidth > 0 && leftPanel}
+        </div>
 
         {/* LEFT HANDLE - always rendered */}
         <ResizeHandle onDrag={handleLeftResize} onDoubleClick={toggleLeftPanel} />
@@ -164,12 +169,17 @@ export function ResizableLayout({
         {/* RIGHT HANDLE - always rendered */}
         <ResizeHandle onDrag={handleRightResize} onDoubleClick={toggleRightPanel} />
 
-        {/* RIGHT PANEL - conditionally rendered */}
-        {!collapsedPanels.right && (
-          <div className="resizable-panel right" style={{ width: rightWidth, overflow: "hidden" }}>
-            {rightPanel}
-          </div>
-        )}
+        {/* RIGHT PANEL - always rendered, visibility controlled by CSS */}
+        <div 
+          className="resizable-panel right" 
+          style={{ 
+            width: rightWidth, 
+            overflow: "hidden",
+            display: rightWidth === 0 ? 'none' : 'block'
+          }}
+        >
+          {rightWidth > 0 && rightPanel}
+        </div>
       </div>
 
       {/* BOTTOM PANEL RESIZE HANDLE - always rendered when bottom panel exists */}
