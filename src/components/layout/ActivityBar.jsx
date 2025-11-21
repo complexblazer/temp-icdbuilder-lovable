@@ -23,7 +23,7 @@ export function ActivityBar({ items, activeItem, onItemClick, panelControls, col
             return (
               <ActivityBarIcon
                 key={control.id}
-                icon={isCollapsed ? control.iconCollapsed : control.icon}
+                icon={isCollapsed ? control.icon : control.iconCollapsed}
                 label={control.label}
                 active={!isCollapsed}
                 onClick={() => onPanelControlClick(control.id)}
