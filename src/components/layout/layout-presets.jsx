@@ -33,22 +33,22 @@ export const panelControlItems = [
   {
     id: "toggle-left",
     panel: "left",
-    icon: "◧",
-    iconCollapsed: "◫",
+    icon: "PanelLeftOpen",
+    iconCollapsed: "PanelLeftClose",
     label: "Toggle Flows Panel",
   },
   {
     id: "toggle-right",
     panel: "right",
-    icon: "◨",
-    iconCollapsed: "◫",
+    icon: "PanelRightOpen",
+    iconCollapsed: "PanelRightClose",
     label: "Toggle Right Panel",
   },
   {
     id: "toggle-bottom",
     panel: "bottom",
-    icon: "⬒",
-    iconCollapsed: "⬓",
+    icon: "PanelBottomOpen",
+    iconCollapsed: "PanelBottomClose",
     label: "Toggle Field Browser Panel",
   },
 ];
