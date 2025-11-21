@@ -47,7 +47,7 @@ export const panelControlItems = [
     id: "toggle-bottom",
     panel: "bottom",
     icon: "⬓",
-    iconCollapsed: "□",
+    iconCollapsed: "⬓",
     label: "Toggle Field Browser Panel",
   },
 ];
