@@ -4,14 +4,12 @@
    FIXED: Full viewport height enforcement
    ========================================================================== */
 
-/* Resizable Layout Wrapper - Full Viewport */
+/* Resizable Layout Wrapper - Inherit from parent flex container */
 .resizable-layout-wrapper {
-  height: 100vh !important; /* Force full viewport height */
-  width: 100vw !important;
+  height: 100%;
+  width: 100%;
   overflow: hidden;
-  position: fixed; /* Prevent any parent container from collapsing */
-  top: 0;
-  left: 0;
+  display: grid;
 }
 
 /* Resizable Layout Container */
@@ -31,7 +29,7 @@
 
 .resizable-panel.left,
 .resizable-panel.right {
-  height: 100vh !important; /* Sidebar panels always full height */
+  height: 100%;
 }
 
 .resizable-panel.collapsed {
@@ -52,7 +50,7 @@
 .resize-handle.vertical {
   width: 4px;
   cursor: col-resize;
-  height: 100vh; /* Full height for vertical handles */
+  height: 100%;
 }
 
 .resize-handle.horizontal {
@@ -128,7 +126,7 @@
 /* Activity Bar */
 .activity-bar {
   width: 48px;
-  height: 100vh !important; /* Full viewport height */
+  height: 100%;
   background: var(--bg-panel);
   border-right: 1px solid var(--border-subtle);
   display: flex;
