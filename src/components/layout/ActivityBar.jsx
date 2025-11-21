@@ -1,4 +1,5 @@
 import React from 'react';
+import { icons } from 'lucide-react';
 
 export function ActivityBar({ items, activeItem, onItemClick, panelControls, collapsedPanels, onPanelControlClick }) {
   return (
@@ -36,6 +37,11 @@ export function ActivityBar({ items, activeItem, onItemClick, panelControls, col
 }
 
 function ActivityBarIcon({ icon, label, active, onClick }) {
+  // For panel controls, icon is still a string (unicode)
+  // For activity items, icon is a Lucide component name (e.g., "Boxes")
+  const isLucideIcon = typeof icon === 'string' && icons[icon];
+  const LucideIcon = isLucideIcon ? icons[icon] : null;
+  
   return (
     <button
       className={`activity-bar-icon ${active ? 'active' : ''}`}
@@ -43,7 +49,11 @@ function ActivityBarIcon({ icon, label, active, onClick }) {
       aria-label={label}
       title={label}
     >
-      <span className="icon">{icon}</span>
+      {LucideIcon ? (
+        <LucideIcon size={20} strokeWidth={2} />
+      ) : (
+        <span className="icon">{icon}</span>
+      )}
     </button>
   );
 }

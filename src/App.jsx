@@ -17,6 +17,8 @@ import { ImportStrategyModal } from "./components/ImportStrategyModal";
 import { parseCsvFile } from "./lib/csv";
 import { exportMappingsCsv, exportDataContractJson, exportBooEngineProfile, exportWorkspace, importWorkspaceFile } from "./lib/ICDBuilder";
 import { IconButton } from "./components/primitives";
+import { BlankCanvas } from './components/workspace/BlankCanvas';
+import { Waypoints, Pyramid, Zap } from 'lucide-react';
 
 // CSS imports - Theme system first, then app.css (legacy), then component styles
 import "./styles/theme.css";
@@ -32,6 +34,7 @@ import "./styles/components/modal.css";
 import "./styles/components/layout.css";
 import "./styles/components/bottom-panel.css";
 import "./styles/components/app-header.css";
+import "./styles/components/blank-canvas.css";
 
 function getSystemColor(system) {
   const sys = system.toLowerCase();
@@ -280,6 +283,23 @@ export default function App() {
   
   const [activeView, setActiveView] = useState('mappings'); // 'mappings' or 'catalog'
   const [headerActiveView, setHeaderActiveView] = useState('mapper'); // 'mapper' | 'flows' | 'fields' | 'data'
+  
+  // ============================================================
+  // MODULE NAVIGATION STATE
+  // ============================================================
+  const [activeModule, setActiveModule] = useState(() => {
+    const saved = localStorage.getItem('bool_active_module');
+    return saved || null; // null = blank canvas on first load
+  });
+
+  // Persist active module to localStorage
+  useEffect(() => {
+    if (activeModule) {
+      localStorage.setItem('bool_active_module', activeModule);
+    } else {
+      localStorage.removeItem('bool_active_module');
+    }
+  }, [activeModule]);
   
   const [importModalOpen, setImportModalOpen] = useState(false);
   const [pendingCatalogData, setPendingCatalogData] = useState(null);
@@ -614,6 +634,468 @@ export default function App() {
       theme
     });
   };
+
+  // ============================================================
+  // MODULE CONTENT RENDERERS
+  // ============================================================
+
+  /**
+   * Render left sidebar content based on active module
+   */
+  function renderLeftSidebar() {
+    switch (activeModule) {
+      case 'packager':
+        return renderPackagerSidebar();
+      
+      case 'explorer':
+        return (
+          <div style={{ padding: 20, color: 'var(--text-muted)', fontSize: '0.875rem' }}>
+            <p>Explorer sidebar</p>
+            <p style={{ marginTop: 10, fontSize: '0.75rem' }}>Coming in Phase 2 (Q1 2026)</p>
+          </div>
+        );
+      
+      case 'architect':
+        return (
+          <div style={{ padding: 20, color: 'var(--text-muted)', fontSize: '0.875rem' }}>
+            <p>Architect sidebar</p>
+            <p style={{ marginTop: 10, fontSize: '0.75rem' }}>Coming in Phase 4 (Q2-Q3 2026)</p>
+          </div>
+        );
+      
+      case 'observer':
+        return (
+          <div style={{ padding: 20, color: 'var(--text-muted)', fontSize: '0.875rem' }}>
+            <p>Observer sidebar</p>
+            <p style={{ marginTop: 10, fontSize: '0.75rem' }}>Coming in Phase 3 (Q2 2026)</p>
+          </div>
+        );
+      
+      default:
+        return null; // No sidebar for blank canvas
+    }
+  }
+
+  /**
+   * Render center canvas content based on active module
+   */
+  function renderWorkspaceContent() {
+    switch (activeModule) {
+      case 'packager':
+        return renderPackagerWorkspace();
+      
+      case 'explorer':
+        return (
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            height: '100%',
+            padding: 40,
+            textAlign: 'center'
+          }}>
+            <div>
+              <Waypoints size={64} strokeWidth={1} style={{ color: 'var(--text-muted)', marginBottom: 20 }} />
+              <h2 style={{ color: 'var(--text-primary)', marginBottom: 10 }}>Explorer Module</h2>
+              <p style={{ color: 'var(--text-muted)' }}>
+                API discovery, schema registry, and connection management
+              </p>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', marginTop: 10 }}>
+                Planned for Phase 2 (Q1 2026)
+              </p>
+            </div>
+          </div>
+        );
+      
+      case 'architect':
+        return (
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            height: '100%',
+            padding: 40,
+            textAlign: 'center'
+          }}>
+            <div>
+              <Pyramid size={64} strokeWidth={1} style={{ color: 'var(--text-muted)', marginBottom: 20 }} />
+              <h2 style={{ color: 'var(--text-primary)', marginBottom: 10 }}>Architect Module</h2>
+              <p style={{ color: 'var(--text-muted)' }}>
+                Enterprise data model visualization and impact analysis
+              </p>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', marginTop: 10 }}>
+                Planned for Phase 4 (Q2-Q3 2026)
+              </p>
+            </div>
+          </div>
+        );
+      
+      case 'observer':
+        return (
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            height: '100%',
+            padding: 40,
+            textAlign: 'center'
+          }}>
+            <div>
+              <Zap size={64} strokeWidth={1} style={{ color: 'var(--text-muted)', marginBottom: 20 }} />
+              <h2 style={{ color: 'var(--text-primary)', marginBottom: 10 }}>Observer Module</h2>
+              <p style={{ color: 'var(--text-muted)' }}>
+                Integration health monitoring, SLA tracking, and telemetry
+              </p>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', marginTop: 10 }}>
+                Planned for Phase 3 (Q2 2026)
+              </p>
+            </div>
+          </div>
+        );
+      
+      default:
+        return <BlankCanvas onSelectModule={setActiveModule} />;
+    }
+  }
+
+  /**
+   * Packager sidebar content (existing PACKAGES/DATA sections)
+   */
+  function renderPackagerSidebar() {
+    return (
+      <div className="flow-sidebar">
+        {/* PACKAGES SECTION */}
+        <div className="sidebar-section-container">
+          <div 
+            className="sidebar-section-header"
+            onClick={() => setSidebarSections(prev => ({ ...prev, packages: !prev.packages }))}
+          >
+            <span className="nav-chevron">{sidebarSections.packages ? '▾' : '▸'}</span>
+            <span>PACKAGES</span>
+          </div>
+          {sidebarSections.packages && (
+            <div className="sidebar-section-body">
+              {packages.map(pkg => (
+                <div key={pkg.id} className="package-item">
+                  <div className="sidebar-nav-item">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
+                      <span className="nav-chevron" onClick={() => togglePackage(pkg.id)}>
+                        {pkg.collapsed ? '▸' : '▾'}
+                      </span>
+                      {editingPackageId === pkg.id ? (
+                        <input
+                          type="text"
+                          className="inline-edit-input"
+                          value={pkg.name}
+                          onChange={(e) => handlePackageRename(pkg.id, e.target.value)}
+                          onBlur={() => setEditingPackageId(null)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') setEditingPackageId(null);
+                            if (e.key === 'Escape') setEditingPackageId(null);
+                          }}
+                          autoFocus
+                        />
+                      ) : (
+                        <span onClick={() => setEditingPackageId(pkg.id)}>
+                          {pkg.name}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flow-actions">
+                      <button
+                        type="button"
+                        className="icon-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeletePackage(e, pkg.id);
+                        }}
+                        title="Delete package"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  </div>
+                  {!pkg.collapsed && (
+                    <div className="package-flows">
+                      {flows.filter(f => f.package_id === pkg.id).map(flow => (
+                        <div
+                          key={flow.id}
+                          className={`sidebar-nav-subitem ${flow.id === activeFlowId ? 'active' : ''}`}
+                          onClick={() => handleFlowClick(flow.id)}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
+                            {editingFlowId === flow.id ? (
+                              <input
+                                type="text"
+                                className="inline-edit-input"
+                                value={flow.name}
+                                onChange={(e) => handleFlowRename(flow.id, e.target.value)}
+                                onBlur={() => setEditingFlowId(null)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') setEditingFlowId(null);
+                                  if (e.key === 'Escape') setEditingFlowId(null);
+                                }}
+                                onClick={(e) => e.stopPropagation()}
+                                autoFocus
+                              />
+                            ) : (
+                              <span onClick={(e) => {
+                                e.stopPropagation();
+                                setEditingFlowId(flow.id);
+                              }}>
+                                {flow.name}
+                              </span>
+                            )}
+                          </div>
+                          <div className="flow-actions">
+                            <button
+                              type="button"
+                              className="icon-btn"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDuplicateFlow(flow.id);
+                              }}
+                              title="Duplicate flow"
+                            >
+                              ⧉
+                            </button>
+                            <button
+                              type="button"
+                              className="icon-btn"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteFlow(flow.id);
+                              }}
+                              title="Delete flow"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                      <button
+                        type="button"
+                        className="sidebar-add-flow-btn"
+                        onClick={() => handleAddFlow(pkg.id)}
+                      >
+                        ⊕ Add Flow
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
+              <button
+                type="button"
+                className="sidebar-add-flow-btn"
+                onClick={handleAddPackage}
+                style={{ marginTop: '8px' }}
+              >
+                ⊕ Add Package
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* DATA SECTION */}
+        <div className="sidebar-section-container">
+          <div 
+            className="sidebar-section-header"
+            onClick={() => setSidebarSections(prev => ({ ...prev, data: !prev.data }))}
+          >
+            <span className="nav-chevron">{sidebarSections.data ? '▾' : '▸'}</span>
+            <span>DATA</span>
+          </div>
+          {sidebarSections.data && (
+            <div className="sidebar-section-body">
+              {/* IMPORTS Subsection */}
+              <div 
+                className="sidebar-nav-item"
+                onClick={() => setDataSubsections(prev => ({ ...prev, imports: !prev.imports }))}
+              >
+                <span className="nav-chevron">{dataSubsections.imports ? '▾' : '▸'}</span>
+                <span>IMPORTS</span>
+              </div>
+              {dataSubsections.imports && (
+                <div>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".csv,text/csv"
+                    onChange={handleCatalogUpload}
+                    style={{ display: 'none' }}
+                  />
+                  <button
+                    type="button"
+                    className="sidebar-nav-subitem"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <span className="data-item-icon">↓</span>
+                    <span>Load fields catalog</span>
+                  </button>
+                  <input
+                    ref={workspaceInputRef}
+                    type="file"
+                    accept=".json,application/json"
+                    onChange={handleImportWorkspace}
+                    style={{ display: 'none' }}
+                  />
+                  <button
+                    type="button"
+                    className="sidebar-nav-subitem"
+                    onClick={() => workspaceInputRef.current?.click()}
+                  >
+                    <span className="data-item-icon">↓</span>
+                    <span>Import workspace</span>
+                  </button>
+                </div>
+              )}
+
+              {/* EXPORTS Subsection */}
+              <div 
+                className="sidebar-nav-item"
+                onClick={() => setDataSubsections(prev => ({ ...prev, exports: !prev.exports }))}
+              >
+                <span className="nav-chevron">{dataSubsections.exports ? '▾' : '▸'}</span>
+                <span>EXPORTS</span>
+              </div>
+              {dataSubsections.exports && (
+                <div>
+                  <button
+                    type="button"
+                    className="sidebar-nav-subitem"
+                    onClick={() => exportMappingsCsv(activeFlow?.mappings || [])}
+                  >
+                    <span className="data-item-icon">↑</span>
+                    <span>ICD CSV</span>
+                  </button>
+                  <button
+                    type="button"
+                    className="sidebar-nav-subitem"
+                    onClick={() => exportDataContractJson(activeFlow?.mappings || [], activeFlowId)}
+                  >
+                    <span className="data-item-icon">↑</span>
+                    <span>JSON Contract</span>
+                  </button>
+                  <button
+                    type="button"
+                    className="sidebar-nav-subitem"
+                    onClick={() => exportBooEngineProfile(activeFlow?.mappings || [], activeFlowId)}
+                  >
+                    <span className="data-item-icon">↑</span>
+                    <span>BOO Profile</span>
+                  </button>
+                  <button
+                    type="button"
+                    className="sidebar-nav-subitem"
+                    onClick={handleExportWorkspace}
+                  >
+                    <span className="data-item-icon">↑</span>
+                    <span>Export workspace</span>
+                  </button>
+                </div>
+              )}
+
+              {/* ISSUES Subsection */}
+              <div 
+                className="sidebar-nav-item"
+                onClick={() => setDataSubsections(prev => ({ ...prev, issues: !prev.issues }))}
+              >
+                <span className="nav-chevron">{dataSubsections.issues ? '▾' : '▸'}</span>
+                <span>ISSUES</span>
+              </div>
+              {dataSubsections.issues && (
+                <div>
+                  <div className="placeholder-content">
+                    No issues detected
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  /**
+   * Packager workspace content (existing mapping/catalog view)
+   */
+  function renderPackagerWorkspace() {
+    return (
+      <>
+        {catalogMeta && (
+          <div className="catalog-status-banner">
+            📁 Catalog loaded: <strong>{catalogMeta.filename}</strong> ({catalogMeta.recordCount} fields)
+            <button 
+              type="button" 
+              className="banner-dismiss"
+              onClick={() => setCatalogMeta(null)}
+              title="Dismiss"
+            >
+              ×
+            </button>
+          </div>
+        )}
+        {storageError && (
+          <div className="storage-error-banner">
+            ⚠️ {storageError}
+            <button 
+              type="button" 
+              className="banner-dismiss"
+              onClick={() => setStorageError(null)}
+              title="Dismiss"
+            >
+              ×
+            </button>
+          </div>
+        )}
+
+        <div className="view-toggle-container">
+          <button
+            className={`view-toggle-btn ${activeView === 'mappings' ? 'active' : ''}`}
+            onClick={() => setActiveView('mappings')}
+          >
+            Mappings
+          </button>
+          <button
+            className={`view-toggle-btn ${activeView === 'catalog' ? 'active' : ''}`}
+            onClick={() => setActiveView('catalog')}
+            disabled={!fieldsCatalog || fieldsCatalog.length === 0}
+            title={(!fieldsCatalog || fieldsCatalog.length === 0) ? "No catalog loaded" : "View catalog"}
+          >
+            Catalog
+          </button>
+        </div>
+
+        {activeView === 'mappings' ? (
+          <MappingTable
+            mappings={activeFlow?.mappings || []}
+            onUpdate={(updated) => updateActiveMappings(updated)}
+            onRemove={(idx) =>
+              updateActiveMappings(mappings => mappings.filter((_, i) => i !== idx))
+            }
+            sourceSystem={activeFlow?.source_system || ""}
+            targetSystem={activeFlow?.target_system || ""}
+            availableFields={allFields}
+            onCreateCustomField={handleCreateCustomField}
+            packageName={packages.find(p => p.id === activeFlow?.package_id)?.name}
+            flowName={activeFlow?.name}
+            showAllFlows={showAllFlows}
+            onToggleShowAll={() => setShowAllFlows(!showAllFlows)}
+            allFlows={flows}
+            packages={packages}
+          />
+        ) : (
+          <CatalogTable
+            catalog={fieldsCatalog}
+            catalogMeta={catalogMeta}
+            onUpdateField={handleUpdateCatalogField}
+            onDeleteField={handleDeleteCatalogField}
+          />
+        )}
+      </>
+    );
+  }
 
   const handleImportWorkspace = (e) => {
     const file = e.target.files?.[0];
@@ -1090,433 +1572,17 @@ export default function App() {
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <AppLayout
-        // Header props
+        flowsPanel={renderLeftSidebar()}
+        workspacePanel={renderWorkspaceContent()}
+        fieldsPanel={null}
+        activeModule={activeModule}
+        onModuleChange={setActiveModule}
         activeView={headerActiveView}
         onViewChange={setHeaderActiveView}
         activeFlow={activeFlow}
         packageName={packages.find(p => p.id === activeFlow?.package_id)?.name}
         theme={theme}
         onToggleTheme={toggleTheme}
-        // Panel content props
-        flowsPanel={
-          <div className="flow-sidebar">
-              
-              <div className="sidebar-header">
-                <div className="sidebar-title-group">
-                  <h1>BOOL</h1>
-                  <span className="sidebar-subtitle">ICD Builder</span>
-                </div>
-              </div>
-
-              <div className={`sidebar-section-container ${sidebarSections.packages ? '' : 'collapsed'}`}>
-                <div 
-                  className="sidebar-section-header"
-                  onClick={() => setSidebarSections(prev => ({ ...prev, packages: !prev.packages }))}
-                >
-                  <div>
-                    <span className="nav-chevron">{sidebarSections.packages ? '▾' : '▸'}</span>
-                    {' '}PACKAGES
-                  </div>
-                  {sidebarSections.packages && (
-                    <button 
-                      type="button"
-                      onClick={(e) => { e.stopPropagation(); handleAddPackage(); }}
-                      title="Add new package"
-                    >
-                      +
-                    </button>
-                  )}
-                </div>
-                <div className="sidebar-section-body">
-                    {packages.map(pkg => {
-                      const pkgFlows = flows.filter(f => f.package_id === pkg.id);
-                      return (
-                        <div key={pkg.id} className="package-container">
-                          <div className="sidebar-nav-item">
-                            <span 
-                              className="collapse-arrow"
-                              onClick={() => handleTogglePackageCollapse(pkg.id)}
-                            >
-                              {pkg.collapsed ? '▸' : '▾'}
-                            </span>
-                            {editingPackageId === pkg.id ? (
-                              <input
-                                type="text"
-                                className="package-name-input"
-                                defaultValue={pkg.name}
-                                autoFocus
-                                onClick={(e) => e.stopPropagation()}
-                                onBlur={(e) => {
-                                  handleUpdatePackageName(pkg.id, e.target.value);
-                                  setEditingPackageId(null);
-                                }}
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter') {
-                                    handleUpdatePackageName(pkg.id, e.target.value);
-                                    setEditingPackageId(null);
-                                  } else if (e.key === 'Escape') {
-                                    setEditingPackageId(null);
-                                  }
-                                }}
-                              />
-                            ) : (
-                              <span className="package-name">{pkg.name}</span>
-                            )}
-                            <div className="package-actions">
-                              <button 
-                                onClick={(e) => { e.stopPropagation(); setEditingPackageId(pkg.id); }}
-                                title="Rename package"
-                              >
-                                ✎
-                              </button>
-                              <button 
-                                onClick={(e) => handleDeletePackage(e, pkg.id)}
-                                title="Delete package"
-                              >
-                                ×
-                              </button>
-                            </div>
-                          </div>
-                          {!pkg.collapsed && (
-                            <div className="package-flows">
-                              {pkgFlows.map(flow => {
-                                const systemClass = flow.source_system ? flow.source_system.toLowerCase() : '';
-                                return (
-                                  <div 
-                                    key={flow.id} 
-                                    className={`sidebar-nav-subitem ${flow.id === activeFlowId ? 'active' : ''} ${systemClass}`}
-                                    onClick={() => setActiveFlowId(flow.id)}
-                                  >
-                                    <div className="flow-item-content">
-                                      <div className="flow-item-name">{flow.name}</div>
-                                      <div className="flow-item-meta">
-                                        {flow.source_system || 'Source?'} → {flow.target_system || 'Target?'}
-                                      </div>
-                                    </div>
-                                    <div className="flow-actions">
-                                      <button 
-                                        onClick={(e) => { e.stopPropagation(); handleDuplicateFlow(flow.id); }}
-                                        title="Duplicate flow"
-                                      >
-                                        ⎘
-                                      </button>
-                                      <button 
-                                        onClick={(e) => handleDeleteFlow(e, flow.id)}
-                                        title="Delete flow"
-                                      >
-                                        ×
-                                      </button>
-                                    </div>
-                                  </div>
-                                );
-                              })}
-                              <button 
-                                className="sidebar-nav-add-flow-btn"
-                                onClick={() => handleAddFlow(pkg.id)}
-                              >
-                                + Add Flow to {pkg.name}
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                </div>
-              </div>
-
-              <div className={`sidebar-section-container ${sidebarSections.flows ? '' : 'collapsed'}`}>
-                <div 
-                  className="sidebar-section-header"
-                  onClick={() => setSidebarSections(prev => ({ ...prev, flows: !prev.flows }))}
-                >
-                  <div>
-                    <span className="nav-chevron">{sidebarSections.flows ? '▾' : '▸'}</span>
-                    {' '}FLOWS
-                  </div>
-                  {sidebarSections.flows && activeFlow && (
-                    <button 
-                      type="button"
-                      onClick={(e) => { e.stopPropagation(); handleAddFlow(activeFlow.package_id); }}
-                      title="Add new flow"
-                    >
-                      +
-                    </button>
-                  )}
-                </div>
-                <div className="sidebar-section-body">
-                  {activeFlow && (
-                    <div className="flow-config-panel">
-                      <div className="config-row">
-                        <label>Flow Name</label>
-                        {editingFlowId === activeFlow.id ? (
-                          <input
-                            type="text"
-                            className="flow-name-input-config"
-                            defaultValue={activeFlow.name}
-                            autoFocus
-                            onBlur={(e) => {
-                              handleUpdateFlowName(activeFlow.id, e.target.value);
-                              setEditingFlowId(null);
-                            }}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') {
-                                handleUpdateFlowName(activeFlow.id, e.target.value);
-                                setEditingFlowId(null);
-                              } else if (e.key === 'Escape') {
-                                setEditingFlowId(null);
-                              }
-                            }}
-                          />
-                        ) : (
-                          <div className="flow-name-display" onClick={() => setEditingFlowId(activeFlow.id)}>
-                            {activeFlow.name}
-                            <button 
-                              type="button"
-                              onClick={(e) => { e.stopPropagation(); setEditingFlowId(activeFlow.id); }}
-                              title="Edit flow name"
-                            >
-                              ✎
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                      <div className="config-row">
-                        <label>Package</label>
-                        <select 
-                          value={activeFlow.package_id} 
-                          onChange={(e) => handleUpdateFlowConfig(activeFlow.id, 'package_id', e.target.value)}
-                        >
-                          {packages.map(pkg => (
-                            <option key={pkg.id} value={pkg.id}>{pkg.name}</option>
-                          ))}
-                        </select>
-                      </div>
-                      <div className="config-row">
-                        <label>Source System</label>
-                        <select 
-                          value={activeFlow.source_system} 
-                          onChange={(e) => handleUpdateFlowConfig(activeFlow.id, 'source_system', e.target.value)}
-                        >
-                          <option value="">Select...</option>
-                          <option value="Centric">Centric</option>
-                          <option value="Fulfil">Fulfil</option>
-                          <option value="Salsify">Salsify</option>
-                        </select>
-                      </div>
-                      <div className="config-row">
-                        <label>Target System</label>
-                        <select 
-                          value={activeFlow.target_system} 
-                          onChange={(e) => handleUpdateFlowConfig(activeFlow.id, 'target_system', e.target.value)}
-                        >
-                          <option value="">Select...</option>
-                          <option value="Centric">Centric</option>
-                          <option value="Fulfil">Fulfil</option>
-                          <option value="Salsify">Salsify</option>
-                        </select>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-
-              <div className={`sidebar-section-container ${sidebarSections.data ? '' : 'collapsed'}`}>
-                <div 
-                  className="sidebar-section-header"
-                  onClick={() => setSidebarSections(prev => ({ ...prev, data: !prev.data }))}
-                >
-                  <div>
-                    <span className="nav-chevron">{sidebarSections.data ? '▾' : '▸'}</span>
-                    {' '}DATA
-                  </div>
-                </div>
-                <div className="sidebar-section-body">
-                    
-                    {/* IMPORTS Subsection */}
-                    <div 
-                      className="sidebar-nav-item"
-                      onClick={() => setDataSubsections(prev => ({ ...prev, imports: !prev.imports }))}
-                    >
-                      <span className="nav-chevron">{dataSubsections.imports ? '▾' : '▸'}</span>
-                      <span>IMPORTS</span>
-                    </div>
-                    {dataSubsections.imports && (
-                      <div>
-                          <input
-                            ref={fileInputRef}
-                            type="file"
-                            accept=".csv,text/csv"
-                            onChange={handleCatalogUpload}
-                            style={{ display: 'none' }}
-                          />
-                          <button
-                            type="button"
-                            className="sidebar-nav-subitem"
-                            onClick={() => fileInputRef.current?.click()}
-                          >
-                            <span className="data-item-icon">↓</span>
-                            <span>Load fields catalog</span>
-                          </button>
-                          <input
-                            ref={workspaceInputRef}
-                            type="file"
-                            accept=".json,application/json"
-                            onChange={handleImportWorkspace}
-                            style={{ display: 'none' }}
-                          />
-                          <button
-                            type="button"
-                            className="sidebar-nav-subitem"
-                            onClick={() => workspaceInputRef.current?.click()}
-                          >
-                            <span className="data-item-icon">↓</span>
-                            <span>Import workspace</span>
-                          </button>
-                      </div>
-                    )}
-
-                    {/* EXPORTS Subsection */}
-                    <div 
-                      className="sidebar-nav-item"
-                      onClick={() => setDataSubsections(prev => ({ ...prev, exports: !prev.exports }))}
-                    >
-                      <span className="nav-chevron">{dataSubsections.exports ? '▾' : '▸'}</span>
-                      <span>EXPORTS</span>
-                    </div>
-                    {dataSubsections.exports && (
-                      <div>
-                          <button
-                            type="button"
-                            className="sidebar-nav-subitem"
-                            onClick={() => exportMappingsCsv(activeFlow?.mappings || [])}
-                          >
-                            <span className="data-item-icon">↑</span>
-                            <span>ICD CSV</span>
-                          </button>
-                          <button
-                            type="button"
-                            className="sidebar-nav-subitem"
-                            onClick={() => exportDataContractJson(activeFlow?.mappings || [], activeFlowId)}
-                          >
-                            <span className="data-item-icon">↑</span>
-                            <span>JSON Contract</span>
-                          </button>
-                          <button
-                            type="button"
-                            className="sidebar-nav-subitem"
-                            onClick={() => exportBooEngineProfile(activeFlow?.mappings || [], activeFlowId)}
-                          >
-                            <span className="data-item-icon">↑</span>
-                            <span>BOO Profile</span>
-                          </button>
-                          <button
-                            type="button"
-                            className="sidebar-nav-subitem"
-                            onClick={handleExportWorkspace}
-                          >
-                            <span className="data-item-icon">↑</span>
-                            <span>Export workspace</span>
-                          </button>
-                      </div>
-                    )}
-
-                    {/* ISSUES Subsection */}
-                    <div 
-                      className="sidebar-nav-item"
-                      onClick={() => setDataSubsections(prev => ({ ...prev, issues: !prev.issues }))}
-                    >
-                      <span className="nav-chevron">{dataSubsections.issues ? '▾' : '▸'}</span>
-                      <span>ISSUES</span>
-                    </div>
-                    {dataSubsections.issues && (
-                      <div>
-                        <div className="placeholder-content">
-                          No issues detected
-                        </div>
-                      </div>
-                    )}
-
-                </div>
-              </div>
-
-            </div>
-        }
-        workspacePanel={
-          <>
-            {catalogMeta && (
-              <div className="catalog-status-banner">
-                📁 Catalog loaded: <strong>{catalogMeta.filename}</strong> ({catalogMeta.recordCount} fields)
-                <button 
-                  type="button" 
-                  className="banner-dismiss"
-                  onClick={() => setCatalogMeta(null)}
-                  title="Dismiss"
-                >
-                  ×
-                </button>
-              </div>
-            )}
-            {storageError && (
-              <div className="storage-error-banner">
-                ⚠️ {storageError}
-                <button 
-                  type="button" 
-                  className="banner-dismiss"
-                  onClick={() => setStorageError(null)}
-                  title="Dismiss"
-                >
-                  ×
-                </button>
-              </div>
-            )}
-
-            <div className="view-toggle-container">
-              <button
-                className={`view-toggle-btn ${activeView === 'mappings' ? 'active' : ''}`}
-                onClick={() => setActiveView('mappings')}
-              >
-                Mappings
-              </button>
-              <button
-                className={`view-toggle-btn ${activeView === 'catalog' ? 'active' : ''}`}
-                onClick={() => setActiveView('catalog')}
-                disabled={!fieldsCatalog || fieldsCatalog.length === 0}
-                title={(!fieldsCatalog || fieldsCatalog.length === 0) ? "No catalog loaded" : "View catalog"}
-              >
-                Catalog
-              </button>
-            </div>
-
-            {activeView === 'mappings' ? (
-              <MappingTable
-                mappings={activeFlow?.mappings || []}
-                onUpdate={(updated) => updateActiveMappings(updated)}
-                onRemove={(idx) =>
-                  updateActiveMappings(mappings => mappings.filter((_, i) => i !== idx))
-                }
-                sourceSystem={activeFlow?.source_system || ""}
-                targetSystem={activeFlow?.target_system || ""}
-                availableFields={allFields}
-                onCreateCustomField={handleCreateCustomField}
-                packageName={packages.find(p => p.id === activeFlow?.package_id)?.name}
-                flowName={activeFlow?.name}
-                showAllFlows={showAllFlows}
-                onToggleShowAll={() => setShowAllFlows(!showAllFlows)}
-                allFlows={flows}
-                packages={packages}
-              />
-            ) : (
-              <CatalogTable
-                catalog={fieldsCatalog}
-                catalogMeta={catalogMeta}
-                onUpdateField={handleUpdateCatalogField}
-                onDeleteField={handleDeleteCatalogField}
-              />
-            )}
-          </>
-        }
-        fieldsPanel={<div style={{ padding: 20 }}><h2>Fields Placeholder</h2></div>}
         bottomPanel={
           <BottomPanel
             activeBrowsers={bottomPanel.activeBrowsers}
