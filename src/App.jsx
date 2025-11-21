@@ -22,7 +22,6 @@ import { IconButton } from "./components/primitives";
 import "./styles/theme.css";
 import "./styles/base.css";
 import "./styles/app.css"; // Legacy styles (being migrated)
-import "./styles/layout.css";
 import "./styles/components/button.css";
 import "./styles/components/checkbox.css";
 import "./styles/components/sidebar.css";
