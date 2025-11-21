@@ -2,10 +2,8 @@ import React, { useState, useEffect } from 'react';
 import FieldBrowser from '../FieldBrowser';
 
 export function BottomPanel({ 
-  activeBrowser, 
-  openTabs, 
-  onTabClick, 
-  onTabClose,
+  activeBrowsers = ['source'],
+  onBrowserSwitch,
   fields,
   onAddField,
   onBulkAddFields,
@@ -29,19 +27,13 @@ export function BottomPanel({
     }));
   }, [sourceSystem, targetSystem]);
 
-  if (!openTabs || openTabs.length === 0) {
-    return (
-      <div className="bottom-panel-empty">
-        <p className="text-muted">Click SOURCE, TARGET, or CUSTOM in the sidebar to open field browsers</p>
-      </div>
-    );
-  }
-
   const browserLabels = {
     source: 'SOURCE',
     target: 'TARGET',
     custom: 'CUSTOM'
   };
+  
+  const activeBrowser = activeBrowsers[0]; // For Phase 1, only one active browser
 
   const handleSystemChange = (browserType, system) => {
     setBrowserState(prev => ({
@@ -71,43 +63,47 @@ export function BottomPanel({
   return (
     <div className="bottom-panel">
       <div className="bottom-panel-tabs">
-        {openTabs.map(tab => (
-          <button
-            key={tab}
-            className={`bottom-panel-tab ${activeBrowser === tab ? 'active' : ''}`}
-            onClick={() => onTabClick(tab)}
-          >
-            <span className="tab-label">{browserLabels[tab]}</span>
+        {['source', 'target', 'custom'].map(browserType => {
+          const isActive = activeBrowser === browserType;
+          const label = browserLabels[browserType];
+          
+          return (
             <button
-              className="tab-close"
-              onClick={(e) => {
-                e.stopPropagation();
-                onTabClose(tab);
-              }}
-              aria-label={`Close ${browserLabels[tab]}`}
+              key={browserType}
+              className={`bottom-panel-tab ${isActive ? 'active' : ''}`}
+              onClick={() => onBrowserSwitch(browserType)}
             >
-              ×
+              <span className="tab-label">{label}</span>
+              
+              {/* Show system badge for source/target */}
+              {browserType === 'source' && sourceSystem && (
+                <span className="system-badge">{sourceSystem}</span>
+              )}
+              {browserType === 'target' && targetSystem && (
+                <span className="system-badge">{targetSystem}</span>
+              )}
             </button>
-          </button>
-        ))}
+          );
+        })}
       </div>
       
       <div className="bottom-panel-content">
-        {activeBrowser && (
+        {activeBrowsers.map(browserType => (
           <FieldBrowser
-            title={browserLabels[activeBrowser]}
-            system={browserState[activeBrowser].system}
-            objectFilter={browserState[activeBrowser].object}
-            fields={getFieldsForBrowser(activeBrowser)}
-            onSystemChange={(system) => handleSystemChange(activeBrowser, system)}
-            onObjectFilterChange={(object) => handleObjectChange(activeBrowser, object)}
-            onAddField={(field) => onAddField(field, activeBrowser)}
-            onBulkAdd={(fields) => onBulkAddFields(fields, activeBrowser)}
+            key={browserType}
+            title={browserLabels[browserType]}
+            system={browserState[browserType].system}
+            objectFilter={browserState[browserType].object}
+            fields={getFieldsForBrowser(browserType)}
+            onSystemChange={(system) => handleSystemChange(browserType, system)}
+            onObjectFilterChange={(object) => handleObjectChange(browserType, object)}
+            onAddField={(field) => onAddField(field, browserType)}
+            onBulkAdd={(fields) => onBulkAddFields(fields, browserType)}
             usedFieldIds={usedFieldIds}
-            systemLocked={activeBrowser !== 'custom'}
+            systemLocked={browserType !== 'custom'}
             sidebarMode={false}
           />
-        )}
+        ))}
       </div>
     </div>
   );

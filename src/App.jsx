@@ -243,17 +243,23 @@ export default function App() {
   const [sidebarSections, setSidebarSections] = useState({
     packages: false,
     flows: false,
-    fields: false,
     data: false
   });
-  const [fieldBrowsers, setFieldBrowsers] = useState({
-    source: true,
-    target: true,
-    customFields: false
-  });
-  const [bottomPanel, setBottomPanel] = useState({
-    activeBrowser: null,
-    openTabs: []
+  const [bottomPanel, setBottomPanel] = useState(() => {
+    const saved = localStorage.getItem('bool_bottom_panel');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        // Ensure we have valid browser types
+        if (Array.isArray(parsed.activeBrowsers) && parsed.activeBrowsers.length > 0) {
+          return parsed;
+        }
+      } catch (e) {
+        console.warn('Failed to parse saved bottom panel state');
+      }
+    }
+    // Default: SOURCE browser active
+    return { activeBrowsers: ['source'] };
   });
   const [customFieldForm, setCustomFieldForm] = useState({
     system: "",
@@ -286,6 +292,10 @@ export default function App() {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('bool_theme', theme);
   }, [theme]);
+  
+  useEffect(() => {
+    localStorage.setItem('bool_bottom_panel', JSON.stringify(bottomPanel));
+  }, [bottomPanel]);
   
   const toggleTheme = () => {
     setTheme(prev => prev === 'dark' ? 'light' : 'dark');
@@ -994,44 +1004,6 @@ export default function App() {
     });
   };
 
-  const handleToggleFieldBrowser = (browserType) => {
-    setBottomPanel(prev => {
-      const isInTabs = prev.openTabs.includes(browserType);
-      
-      if (!isInTabs) {
-        // Add to tabs and set as active
-        return {
-          activeBrowser: browserType,
-          openTabs: [...prev.openTabs, browserType]
-        };
-      } else if (prev.activeBrowser === browserType) {
-        // Already active - close it
-        const newTabs = prev.openTabs.filter(t => t !== browserType);
-        return {
-          activeBrowser: newTabs.length > 0 ? newTabs[0] : null,
-          openTabs: newTabs
-        };
-      } else {
-        // In tabs but not active - switch to it
-        return {
-          ...prev,
-          activeBrowser: browserType
-        };
-      }
-    });
-  };
-
-  const handleTabClose = (browserType) => {
-    setBottomPanel(prev => {
-      const newTabs = prev.openTabs.filter(t => t !== browserType);
-      return {
-        activeBrowser: newTabs.length > 0 && prev.activeBrowser === browserType 
-          ? newTabs[0] 
-          : prev.activeBrowser,
-        openTabs: newTabs
-      };
-    });
-  };
 
   const handleDragStart = (event) => {
     const { active } = event;
@@ -1348,69 +1320,6 @@ export default function App() {
                 </div>
               </div>
 
-              <div className={`sidebar-section-container fields-section ${sidebarSections.fields ? '' : 'collapsed'}`}>
-                <div 
-                  className="sidebar-section-header"
-                  onClick={() => setSidebarSections(prev => ({ ...prev, fields: !prev.fields }))}
-                >
-                  <div>
-                    <span className="nav-chevron">{sidebarSections.fields ? '▾' : '▸'}</span>
-                    {' '}FIELDS
-                  </div>
-                </div>
-                <div className="sidebar-section-body">
-                  {/* SOURCE */}
-                  <div 
-                    className="sidebar-nav-item"
-                    onClick={() => handleToggleFieldBrowser('source')}
-                  >
-                    <span className="nav-chevron">
-                      {bottomPanel.openTabs.includes('source') ? '●' : '○'}
-                    </span>
-                    <span>SOURCE</span>
-                    {activeFlow?.source_system && (
-                      <span className="system-badge" style={{ 
-                        color: getSystemColor(activeFlow.source_system),
-                        marginLeft: 'auto',
-                        fontSize: '0.75rem'
-                      }}>
-                        {activeFlow.source_system}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* TARGET */}
-                  <div 
-                    className="sidebar-nav-item"
-                    onClick={() => handleToggleFieldBrowser('target')}
-                  >
-                    <span className="nav-chevron">
-                      {bottomPanel.openTabs.includes('target') ? '●' : '○'}
-                    </span>
-                    <span>TARGET</span>
-                    {activeFlow?.target_system && (
-                      <span className="system-badge" style={{ 
-                        color: getSystemColor(activeFlow.target_system),
-                        marginLeft: 'auto',
-                        fontSize: '0.75rem'
-                      }}>
-                        {activeFlow.target_system}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* CUSTOM */}
-                  <div 
-                    className="sidebar-nav-item"
-                    onClick={() => handleToggleFieldBrowser('custom')}
-                  >
-                    <span className="nav-chevron">
-                      {bottomPanel.openTabs.includes('custom') ? '●' : '○'}
-                    </span>
-                    <span>CUSTOM</span>
-                  </div>
-                </div>
-              </div>
 
               <div className={`sidebar-section-container ${sidebarSections.data ? '' : 'collapsed'}`}>
                 <div 
@@ -1610,10 +1519,10 @@ export default function App() {
         fieldsPanel={<div style={{ padding: 20 }}><h2>Fields Placeholder</h2></div>}
         bottomPanel={
           <BottomPanel
-            activeBrowser={bottomPanel.activeBrowser}
-            openTabs={bottomPanel.openTabs}
-            onTabClick={(tab) => setBottomPanel(prev => ({ ...prev, activeBrowser: tab }))}
-            onTabClose={handleTabClose}
+            activeBrowsers={bottomPanel.activeBrowsers}
+            onBrowserSwitch={(browserType) => {
+              setBottomPanel({ activeBrowsers: [browserType] });
+            }}
             fields={allFields}
             onAddField={handleAddFieldToMapping}
             onBulkAddFields={handleBulkAddFields}
