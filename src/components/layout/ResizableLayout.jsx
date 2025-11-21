@@ -131,8 +131,8 @@ export function ResizableLayout({
       style={{
         display: "grid",
         gridTemplateRows: bottomHeight > 0 ? `1fr auto ${bottomHeight}px` : "1fr",
-        height: "100%", // FIXED: Inherit height from parent cascade
-        width: "100%",
+        flex: 1, // ✅ Take remaining space after ActivityBar
+        height: "100%",
         overflow: "hidden",
       }}
     >
