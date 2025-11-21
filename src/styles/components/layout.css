@@ -4,6 +4,23 @@
    CORRECT: Uses height cascade, not position: fixed
    ========================================================================== */
 
+/* App Header */
+.app-header {
+  height: 48px;
+  min-height: 48px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--spacing-md);
+}
+
+.app-header-title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
 /* Resizable Layout Wrapper - Inherits height from parent */
 .resizable-layout-wrapper {
   height: 100%; /* Inherit from parent chain: html → body → #root → App */
