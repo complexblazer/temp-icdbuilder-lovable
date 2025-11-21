@@ -9,22 +9,6 @@ export function Header({
   onToggleTheme
 }) {
   return <header className="app-header">
-      {/* Left: Navigation Tabs */}
-      <nav className="header-nav">
-        <button className={`nav-tab ${activeView === 'packager' ? 'active' : ''}`} onClick={() => onViewChange?.('packager')}>
-          PACKAGER
-        </button>
-        <button className={`nav-tab ${activeView === 'explorer' ? 'active' : ''}`} onClick={() => onViewChange?.('explorer')}>
-          EXPLORER
-        </button>
-        <button className={`nav-tab ${activeView === 'architect' ? 'active' : ''}`} onClick={() => onViewChange?.('architect')}>
-          ARCHITECT
-        </button>
-        <button className={`nav-tab ${activeView === 'observer' ? 'active' : ''}`} onClick={() => onViewChange?.('observer')}>
-          OBSERVER
-        </button>
-      </nav>
-
       {/* Center: Breadcrumb (contextual) */}
       {activeFlow && packageName && <div className="header-breadcrumb">
           <span className="breadcrumb-package">{packageName}</span>
