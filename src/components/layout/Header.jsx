@@ -11,17 +11,17 @@ export function Header({
   return <header className="app-header">
       {/* Left: Navigation Tabs */}
       <nav className="header-nav">
-        <button className={`nav-tab ${activeView === 'mapper' ? 'active' : ''}`} onClick={() => onViewChange?.('mapper')}>
-          MAPPER
+        <button className={`nav-tab ${activeView === 'packager' ? 'active' : ''}`} onClick={() => onViewChange?.('packager')}>
+          PACKAGER
         </button>
-        <button className={`nav-tab ${activeView === 'flows' ? 'active' : ''}`} onClick={() => onViewChange?.('flows')}>
-          FLOWS
+        <button className={`nav-tab ${activeView === 'explorer' ? 'active' : ''}`} onClick={() => onViewChange?.('explorer')}>
+          EXPLORER
         </button>
-        <button className={`nav-tab ${activeView === 'fields' ? 'active' : ''}`} onClick={() => onViewChange?.('fields')}>
-          FIELDS
+        <button className={`nav-tab ${activeView === 'architect' ? 'active' : ''}`} onClick={() => onViewChange?.('architect')}>
+          ARCHITECT
         </button>
-        <button className={`nav-tab ${activeView === 'data' ? 'active' : ''}`} onClick={() => onViewChange?.('data')}>
-          DATA
+        <button className={`nav-tab ${activeView === 'observer' ? 'active' : ''}`} onClick={() => onViewChange?.('observer')}>
+          OBSERVER
         </button>
       </nav>
 
