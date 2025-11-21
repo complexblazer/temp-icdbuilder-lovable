@@ -44,13 +44,15 @@ export function ActivityBar({
         )}
         
         {onSettingsClick && (
-          <ActivityBarIcon
-            icon="Settings"
-            label="Settings"
-            active={false}
-            onClick={onSettingsClick}
-            size={20}
-          />
+          <div className="activity-bar-settings">
+            <ActivityBarIcon
+              icon="Settings"
+              label="Settings"
+              active={false}
+              onClick={onSettingsClick}
+              size={16}
+            />
+          </div>
         )}
       </div>
     </div>
