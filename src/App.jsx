@@ -32,6 +32,7 @@ import "./styles/components/catalog.css";
 import "./styles/components/modal.css";
 import "./styles/components/layout.css";
 import "./styles/components/bottom-panel.css";
+import "./styles/components/app-header.css";
 
 function getSystemColor(system) {
   const sys = system.toLowerCase();
@@ -273,6 +274,7 @@ export default function App() {
   });
   
   const [activeView, setActiveView] = useState('mappings'); // 'mappings' or 'catalog'
+  const [headerActiveView, setHeaderActiveView] = useState('mapper'); // 'mapper' | 'flows' | 'fields' | 'data'
   
   const [importModalOpen, setImportModalOpen] = useState(false);
   const [pendingCatalogData, setPendingCatalogData] = useState(null);
@@ -1117,6 +1119,14 @@ export default function App() {
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <AppLayout
+        // Header props
+        activeView={headerActiveView}
+        onViewChange={setHeaderActiveView}
+        activeFlow={activeFlow}
+        packageName={packages.find(p => p.id === activeFlow?.package_id)?.name}
+        theme={theme}
+        onToggleTheme={toggleTheme}
+        // Panel content props
         flowsPanel={
           <div className="flow-sidebar">
               
@@ -1125,14 +1135,6 @@ export default function App() {
                   <h1>BOOL</h1>
                   <span className="sidebar-subtitle">ICD Builder</span>
                 </div>
-                <IconButton
-                  icon={theme === 'dark' ? '☀' : '☾'}
-                  onClick={toggleTheme}
-                  title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-                  aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-                  variant="ghost"
-                  size="md"
-                />
               </div>
 
               <div className={`sidebar-section-container ${sidebarSections.packages ? '' : 'collapsed'}`}>

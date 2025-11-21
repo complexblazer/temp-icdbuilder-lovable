@@ -4,7 +4,19 @@ import { ActivityBar } from "./ActivityBar";
 import { Header } from "./Header";
 import { activityItems, panelControlItems } from "./layout-presets";
 
-export function AppLayout({ flowsPanel, workspacePanel, fieldsPanel, bottomPanel }) {
+export function AppLayout({ 
+  flowsPanel, 
+  workspacePanel, 
+  fieldsPanel, 
+  bottomPanel,
+  // Header props
+  activeView,
+  onViewChange,
+  activeFlow,
+  packageName,
+  theme,
+  onToggleTheme
+}) {
   const [activePanel, setActivePanel] = useState("flows");
   const [collapsedPanels, setCollapsedPanels] = useState({
     left: false,
@@ -32,7 +44,14 @@ export function AppLayout({ flowsPanel, workspacePanel, fieldsPanel, bottomPanel
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100vh", width: "100vw" }}>
-      <Header />
+      <Header 
+        activeView={activeView}
+        onViewChange={onViewChange}
+        activeFlow={activeFlow}
+        packageName={packageName}
+        theme={theme}
+        onToggleTheme={onToggleTheme}
+      />
       <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
         <ActivityBar
         items={activityItems}
