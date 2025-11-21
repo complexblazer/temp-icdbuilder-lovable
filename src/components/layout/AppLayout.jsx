@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ResizableLayout } from "./ResizableLayout";
 import { ActivityBar } from "./ActivityBar";
-import { activityItems, panelControlItems } from "./layout-presets.jsx";
+import { activityItems, panelControlItems } from "./layout-presets";
 
 export function AppLayout({ flowsPanel, workspacePanel, fieldsPanel, bottomPanel }) {
   const [activePanel, setActivePanel] = useState("flows");
