@@ -4,7 +4,7 @@ import { ResizeHandle } from "./ResizeHandle";
 const MIN_WIDTH_SIDE = 200;
 const MIN_WIDTH_CENTER = 400;
 const MIN_HEIGHT_BOTTOM = 150;
-const COLLAPSE_THRESHOLD = 50; // Drag within 50px of 0 = auto-collapse
+const COLLAPSE_THRESHOLD = 50;
 
 export function ResizableLayout({
   leftPanel,
@@ -22,21 +22,18 @@ export function ResizableLayout({
   const handleLeftResize = useCallback(
     (delta) => {
       setWidths((prev) => {
-        const newLeft = Math.max(0, prev.left + delta); // Allow 0
+        const newLeft = Math.max(0, prev.left + delta);
 
-        // Auto-collapse if dragged below threshold
         if (newLeft < COLLAPSE_THRESHOLD && newLeft > 0) {
           onToggleLeft?.();
-          return prev; // Keep previous width for when we expand again
+          return prev;
         }
 
-        // Auto-expand if dragging from collapsed state
         if (collapsedPanels.left && delta > 0) {
           onToggleLeft?.();
           return { ...prev, left: MIN_WIDTH_SIDE };
         }
 
-        // Normal resize (respects minimum when expanded)
         if (!collapsedPanels.left && newLeft < MIN_WIDTH_SIDE) {
           return { ...prev, left: MIN_WIDTH_SIDE };
         }
@@ -50,21 +47,18 @@ export function ResizableLayout({
   const handleRightResize = useCallback(
     (delta) => {
       setWidths((prev) => {
-        const newRight = Math.max(0, prev.right - delta); // Allow 0
+        const newRight = Math.max(0, prev.right - delta);
 
-        // Auto-collapse if dragged below threshold
         if (newRight < COLLAPSE_THRESHOLD && newRight > 0) {
           onToggleRight?.();
-          return prev; // Keep previous width for when we expand again
+          return prev;
         }
 
-        // Auto-expand if dragging from collapsed state
         if (collapsedPanels.right && delta < 0) {
           onToggleRight?.();
           return { ...prev, right: MIN_WIDTH_SIDE };
         }
 
-        // Normal resize (respects minimum when expanded)
         if (!collapsedPanels.right && newRight < MIN_WIDTH_SIDE) {
           return { ...prev, right: MIN_WIDTH_SIDE };
         }
@@ -78,21 +72,18 @@ export function ResizableLayout({
   const handleBottomResize = useCallback(
     (delta) => {
       setWidths((prev) => {
-        const newBottom = Math.max(0, prev.bottom - delta); // Allow 0
+        const newBottom = Math.max(0, prev.bottom - delta);
 
-        // Auto-collapse if dragged below threshold
         if (newBottom < COLLAPSE_THRESHOLD && newBottom > 0) {
           onToggleBottom?.();
-          return prev; // Keep previous width for when we expand again
+          return prev;
         }
 
-        // Auto-expand if dragging from collapsed state
         if (collapsedPanels.bottom && delta < 0) {
           onToggleBottom?.();
           return { ...prev, bottom: MIN_HEIGHT_BOTTOM };
         }
 
-        // Normal resize (respects minimum when expanded)
         if (!collapsedPanels.bottom && newBottom < MIN_HEIGHT_BOTTOM) {
           return { ...prev, bottom: MIN_HEIGHT_BOTTOM };
         }
@@ -124,12 +115,11 @@ export function ResizableLayout({
       className="resizable-layout-wrapper"
       style={{
         display: "grid",
-        gridTemplateRows: bottomHeight > 0 ? `1fr auto ${bottomHeight}px` : "1fr",
+        gridTemplateRows: bottomHeight > 0 ? `1fr ${bottomHeight}px` : "1fr",
         height: "100%",
         overflow: "hidden",
       }}
     >
-      {/* Top section with 3-panel layout */}
       <div
         className="resizable-layout"
         style={{
@@ -156,68 +146,57 @@ export function ResizableLayout({
         </div>
       </div>
 
-      {/* Bottom section - sidebars extend continuously with handle overlay */}
       {bottomHeight > 0 && (
-        <>
-          {/* Single bottom row with resize handle overlaid on center */}
+        <div
+          style={{
+            position: "relative",
+            display: "grid",
+            gridTemplateColumns: `${leftWidth}px auto 1fr auto ${rightWidth}px`,
+            height: bottomHeight,
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              width: leftWidth,
+              background: "var(--bg-sidebar)",
+              borderRight: leftWidth > 0 ? "1px solid var(--border-subtle)" : "none",
+            }}
+          />
+
+          <div style={{ width: "4px", background: "transparent" }} />
+
           <div
             style={{
               position: "relative",
-              display: "grid",
-              gridTemplateColumns: `${leftWidth}px auto 1fr auto ${rightWidth}px`,
-              height: bottomHeight,
               overflow: "hidden",
+              display: "flex",
+              flexDirection: "column",
             }}
           >
-            {/* Left sidebar - extends continuously from top */}
-            <div
-              style={{
-                width: leftWidth,
-                background: "var(--bg-sidebar)",
-                borderRight: leftWidth > 0 ? "1px solid var(--border-subtle)" : "none",
-              }}
-            />
+            <ResizeHandle onDrag={handleBottomResize} onDoubleClick={toggleBottomPanel} orientation="horizontal" />
 
-            {/* Left handle space */}
-            <div style={{ width: "4px", background: "transparent" }} />
-
-            {/* Center area - contains resize handle + bottom panel */}
             <div
+              className="resizable-panel bottom"
               style={{
-                position: "relative",
+                flex: 1,
                 overflow: "hidden",
-                display: "flex",
-                flexDirection: "column",
               }}
             >
-              {/* Resize handle at top of center area */}
-              <ResizeHandle onDrag={handleBottomResize} onDoubleClick={toggleBottomPanel} orientation="horizontal" />
-
-              {/* Bottom panel content */}
-              <div
-                className="resizable-panel bottom"
-                style={{
-                  flex: 1,
-                  overflow: "hidden",
-                }}
-              >
-                {bottomPanel}
-              </div>
+              {bottomPanel}
             </div>
-
-            {/* Right handle space */}
-            <div style={{ width: "4px", background: "transparent" }} />
-
-            {/* Right sidebar - extends continuously from top */}
-            <div
-              style={{
-                width: rightWidth,
-                background: "var(--bg-sidebar)",
-                borderLeft: rightWidth > 0 ? "1px solid var(--border-subtle)" : "none",
-              }}
-            />
           </div>
-        </>
+
+          <div style={{ width: "4px", background: "transparent" }} />
+
+          <div
+            style={{
+              width: rightWidth,
+              background: "var(--bg-sidebar)",
+              borderLeft: rightWidth > 0 ? "1px solid var(--border-subtle)" : "none",
+            }}
+          />
+        </div>
       )}
     </div>
   );
