@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 
-export function ResizeHandle({ onDrag, onDoubleClick, orientation = "vertical" }) {
+export function ResizeHandle({ onDrag, onDoubleClick, orientation = "vertical", style }) {
   const [isDragging, setIsDragging] = useState(false);
   const startPosRef = useRef(0);
   const rafRef = useRef(null);
@@ -68,6 +68,7 @@ export function ResizeHandle({ onDrag, onDoubleClick, orientation = "vertical" }
       onMouseDown={handleMouseDown}
       onDoubleClick={onDoubleClick}
       style={{
+        ...style, // ✅ Apply parent styles (grid positioning)
         // ✅ Reduce repaints during drag
         willChange: isDragging ? 'background' : 'auto',
         userSelect: 'none', // ✅ Prevent text selection
