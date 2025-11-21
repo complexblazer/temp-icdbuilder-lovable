@@ -1,6 +1,7 @@
 /* ==========================================================================
    BASE STYLES
    Global resets, typography, and foundational elements
+   CRITICAL: Full height cascade for layout
    ========================================================================== */
 
 * {
@@ -16,11 +17,19 @@ body {
   line-height: var(--line-height-base);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  height: 100vh; /* CRITICAL: Start of height cascade */
+  overflow: hidden; /* Prevent document scrolling */
 }
 
 body {
   background: var(--bg-canvas);
   color: var(--text-primary);
+}
+
+/* CRITICAL: Ensure React root takes full height */
+#root {
+  height: 100vh;
+  overflow: hidden;
 }
 
 h1,

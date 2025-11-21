@@ -4,7 +4,7 @@ import { ResizeHandle } from "./ResizeHandle";
 const MIN_WIDTH_SIDE = 200;
 const MIN_WIDTH_CENTER = 400;
 const MIN_HEIGHT_BOTTOM = 150;
-const COLLAPSE_THRESHOLD = 100; // Increased for better drag-to-collapse feel
+const COLLAPSE_THRESHOLD = 100;
 
 export function ResizableLayout({
   leftPanel,
@@ -22,7 +22,6 @@ export function ResizableLayout({
   const handleLeftResize = useCallback(
     (delta) => {
       setWidths((prev) => {
-        // If collapsed, only expand on significant drag right
         if (collapsedPanels.left) {
           if (delta > 10) {
             onToggleLeft?.();
@@ -31,21 +30,17 @@ export function ResizableLayout({
           return prev;
         }
 
-        // Calculate new width
         const newLeft = Math.max(0, prev.left + delta);
 
-        // Collapse if dragged below threshold
         if (newLeft < COLLAPSE_THRESHOLD) {
           onToggleLeft?.();
           return { ...prev, left: 0 };
         }
 
-        // Normal resize with minimum width
         if (newLeft >= MIN_WIDTH_SIDE) {
           return { ...prev, left: newLeft };
         }
 
-        // Snap to minimum
         return { ...prev, left: MIN_WIDTH_SIDE };
       });
     },
@@ -55,7 +50,6 @@ export function ResizableLayout({
   const handleRightResize = useCallback(
     (delta) => {
       setWidths((prev) => {
-        // If collapsed, only expand on significant drag left
         if (collapsedPanels.right) {
           if (delta < -10) {
             onToggleRight?.();
@@ -64,21 +58,17 @@ export function ResizableLayout({
           return prev;
         }
 
-        // Calculate new width (inverse delta for right panel)
         const newRight = Math.max(0, prev.right - delta);
 
-        // Collapse if dragged below threshold
         if (newRight < COLLAPSE_THRESHOLD) {
           onToggleRight?.();
           return { ...prev, right: 0 };
         }
 
-        // Normal resize with minimum width
         if (newRight >= MIN_WIDTH_SIDE) {
           return { ...prev, right: newRight };
         }
 
-        // Snap to minimum
         return { ...prev, right: MIN_WIDTH_SIDE };
       });
     },
@@ -88,7 +78,6 @@ export function ResizableLayout({
   const handleBottomResize = useCallback(
     (delta) => {
       setWidths((prev) => {
-        // If collapsed, only expand on significant drag up
         if (collapsedPanels.bottom) {
           if (delta < -10) {
             onToggleBottom?.();
@@ -97,21 +86,17 @@ export function ResizableLayout({
           return prev;
         }
 
-        // Calculate new height (inverse delta for bottom panel)
         const newBottom = Math.max(0, prev.bottom - delta);
 
-        // Collapse if dragged below threshold
         if (newBottom < COLLAPSE_THRESHOLD) {
           onToggleBottom?.();
           return { ...prev, bottom: 0 };
         }
 
-        // Normal resize with minimum height
         if (newBottom >= MIN_HEIGHT_BOTTOM) {
           return { ...prev, bottom: newBottom };
         }
 
-        // Snap to minimum
         return { ...prev, bottom: MIN_HEIGHT_BOTTOM };
       });
     },
@@ -134,12 +119,11 @@ export function ResizableLayout({
   const rightWidth = collapsedPanels.right ? 0 : widths.right;
   const bottomHeight = collapsedPanels.bottom ? 0 : widths.bottom;
 
-  // Build dynamic grid template - hide collapsed columns entirely
   const gridColumns = [
     !collapsedPanels.left && `${leftWidth}px`,
-    !collapsedPanels.left && "auto", // left handle
-    "1fr", // center always visible
-    !collapsedPanels.right && "auto", // right handle
+    !collapsedPanels.left && "auto",
+    "1fr",
+    !collapsedPanels.right && "auto",
     !collapsedPanels.right && `${rightWidth}px`,
   ]
     .filter(Boolean)
@@ -151,8 +135,8 @@ export function ResizableLayout({
       style={{
         display: "grid",
         gridTemplateRows: bottomHeight > 0 ? `1fr auto ${bottomHeight}px` : "1fr",
-        height: "100vh", // FIXED: Force full viewport height
-        width: "100vw",
+        height: "100%", // FIXED: Inherit height from parent cascade
+        width: "100%",
         overflow: "hidden",
       }}
     >
@@ -166,47 +150,26 @@ export function ResizableLayout({
           overflow: "hidden",
         }}
       >
-        {/* LEFT PANEL + HANDLE (only if not collapsed) */}
+        {/* LEFT PANEL + HANDLE */}
         {!collapsedPanels.left && (
           <>
-            <div
-              className="resizable-panel left"
-              style={{
-                width: leftWidth,
-                height: "100vh", // FIXED: Full viewport height
-                overflow: "hidden",
-              }}
-            >
+            <div className="resizable-panel left" style={{ width: leftWidth, overflow: "hidden" }}>
               {leftPanel}
             </div>
             <ResizeHandle onDrag={handleLeftResize} onDoubleClick={toggleLeftPanel} />
           </>
         )}
 
-        {/* CENTER PANEL (always visible) */}
-        <div
-          className="resizable-panel center"
-          style={{
-            minWidth: MIN_WIDTH_CENTER,
-            height: "100vh", // FIXED: Full viewport height
-            overflow: "auto",
-          }}
-        >
+        {/* CENTER PANEL */}
+        <div className="resizable-panel center" style={{ minWidth: MIN_WIDTH_CENTER, overflow: "auto" }}>
           {centerPanel}
         </div>
 
-        {/* RIGHT PANEL + HANDLE (only if not collapsed) */}
+        {/* RIGHT PANEL + HANDLE */}
         {!collapsedPanels.right && (
           <>
             <ResizeHandle onDrag={handleRightResize} onDoubleClick={toggleRightPanel} />
-            <div
-              className="resizable-panel right"
-              style={{
-                width: rightWidth,
-                height: "100vh", // FIXED: Full viewport height
-                overflow: "hidden",
-              }}
-            >
+            <div className="resizable-panel right" style={{ width: rightWidth, overflow: "hidden" }}>
               {rightPanel}
             </div>
           </>
@@ -218,7 +181,7 @@ export function ResizableLayout({
         <ResizeHandle onDrag={handleBottomResize} onDoubleClick={toggleBottomPanel} orientation="horizontal" />
       )}
 
-      {/* BOTTOM PANEL - Spans full width beneath center column only */}
+      {/* BOTTOM PANEL */}
       {bottomHeight > 0 && (
         <div
           style={{
@@ -227,18 +190,11 @@ export function ResizableLayout({
             display: "flex",
             flexDirection: "column",
             height: `${bottomHeight}px`,
-            // Calculate margins to align with center panel
             marginLeft: !collapsedPanels.left ? `${leftWidth + 4}px` : "0",
             marginRight: !collapsedPanels.right ? `${rightWidth + 4}px` : "0",
           }}
         >
-          <div
-            className="resizable-panel bottom"
-            style={{
-              flex: 1,
-              overflow: "hidden",
-            }}
-          >
+          <div className="resizable-panel bottom" style={{ flex: 1, overflow: "hidden" }}>
             {bottomPanel}
           </div>
         </div>

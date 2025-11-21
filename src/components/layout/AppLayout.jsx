@@ -31,6 +31,8 @@ export function AppLayout({ flowsPanel, workspacePanel, fieldsPanel, bottomPanel
 
   return (
     <div style={{ display: "flex", height: "100vh", width: "100vw" }}>
+      {" "}
+      {/* CRITICAL: Full height container */}
       <ActivityBar
         items={activityItems}
         activeItem={activePanel}
