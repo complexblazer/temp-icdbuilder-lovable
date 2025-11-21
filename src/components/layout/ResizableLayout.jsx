@@ -4,6 +4,8 @@ import { ResizeHandle } from "./ResizeHandle";
 const MIN_WIDTH_SIDE = 200;
 const MIN_WIDTH_CENTER = 400;
 const MIN_HEIGHT_BOTTOM = 150;
+const COLLAPSE_THRESHOLD = 150; // ✅ Increased from 100 for better UX
+const EXPAND_THRESHOLD = 50;    // ✅ Threshold to re-expand from collapsed state
 
 export function ResizableLayout({
   leftPanel,
@@ -21,100 +23,82 @@ export function ResizableLayout({
   const handleLeftResize = useCallback(
     (delta) => {
       setWidths((prev) => {
+        // ✅ Handle expansion from collapsed state
+        if (collapsedPanels.left) {
+          if (delta > EXPAND_THRESHOLD) {
+            onToggleLeft?.();
+            return { ...prev, left: MIN_WIDTH_SIDE };
+          }
+          return prev;
+        }
+
         const newLeft = Math.max(0, prev.left + delta);
 
-        // Expanding from 0? Jump to minimum viable width
-        if (prev.left === 0 && newLeft > 0) {
-          onToggleLeft?.();
-          return { ...prev, left: MIN_WIDTH_SIDE };
-        }
-
-        // Collapsing to nearly 0? Snap to 0
-        if (newLeft > 0 && newLeft < 50) {
+        // ✅ Collapse if dragged below threshold
+        if (newLeft < COLLAPSE_THRESHOLD) {
           onToggleLeft?.();
           return { ...prev, left: 0 };
         }
 
-        // Collapsing to exactly 0? Update external state
-        if (newLeft === 0 && prev.left > 0) {
-          onToggleLeft?.();
-          return { ...prev, left: 0 };
-        }
-
-        // Normal resize: enforce minimum only when above snap threshold
-        return { 
-          ...prev, 
-          left: newLeft >= 50 ? Math.max(MIN_WIDTH_SIDE, newLeft) : newLeft
-        };
+        // ✅ Enforce minimum width
+        return { ...prev, left: Math.max(MIN_WIDTH_SIDE, newLeft) };
       });
     },
-    [onToggleLeft],
+    [collapsedPanels.left, onToggleLeft],
   );
 
   const handleRightResize = useCallback(
     (delta) => {
       setWidths((prev) => {
+        // ✅ Handle expansion from collapsed state
+        if (collapsedPanels.right) {
+          if (delta < -EXPAND_THRESHOLD) {
+            onToggleRight?.();
+            return { ...prev, right: MIN_WIDTH_SIDE };
+          }
+          return prev;
+        }
+
         const newRight = Math.max(0, prev.right - delta);
 
-        // Expanding from 0? Jump to minimum viable width
-        if (prev.right === 0 && newRight > 0) {
-          onToggleRight?.();
-          return { ...prev, right: MIN_WIDTH_SIDE };
-        }
-
-        // Collapsing to nearly 0? Snap to 0
-        if (newRight > 0 && newRight < 50) {
+        // ✅ Collapse if dragged below threshold
+        if (newRight < COLLAPSE_THRESHOLD) {
           onToggleRight?.();
           return { ...prev, right: 0 };
         }
 
-        // Collapsing to exactly 0? Update external state
-        if (newRight === 0 && prev.right > 0) {
-          onToggleRight?.();
-          return { ...prev, right: 0 };
-        }
-
-        // Normal resize: enforce minimum only when above snap threshold
-        return { 
-          ...prev, 
-          right: newRight >= 50 ? Math.max(MIN_WIDTH_SIDE, newRight) : newRight
-        };
+        // ✅ Enforce minimum width
+        return { ...prev, right: Math.max(MIN_WIDTH_SIDE, newRight) };
       });
     },
-    [onToggleRight],
+    [collapsedPanels.right, onToggleRight],
   );
 
   const handleBottomResize = useCallback(
     (delta) => {
       setWidths((prev) => {
+        // ✅ Handle expansion from collapsed state
+        if (collapsedPanels.bottom) {
+          if (delta < -EXPAND_THRESHOLD) {
+            onToggleBottom?.();
+            return { ...prev, bottom: MIN_HEIGHT_BOTTOM };
+          }
+          return prev;
+        }
+
         const newBottom = Math.max(0, prev.bottom - delta);
 
-        // Expanding from 0? Jump to minimum viable height
-        if (prev.bottom === 0 && newBottom > 0) {
-          onToggleBottom?.();
-          return { ...prev, bottom: MIN_HEIGHT_BOTTOM };
-        }
-
-        // Collapsing to nearly 0? Snap to 0
-        if (newBottom > 0 && newBottom < 50) {
+        // ✅ Collapse if dragged below threshold
+        if (newBottom < COLLAPSE_THRESHOLD) {
           onToggleBottom?.();
           return { ...prev, bottom: 0 };
         }
 
-        // Collapsing to exactly 0? Update external state
-        if (newBottom === 0 && prev.bottom > 0) {
-          onToggleBottom?.();
-          return { ...prev, bottom: 0 };
-        }
-
-        // Normal resize: enforce minimum only when above snap threshold
-        return { 
-          ...prev, 
-          bottom: newBottom >= 50 ? Math.max(MIN_HEIGHT_BOTTOM, newBottom) : newBottom
-        };
+        // ✅ Enforce minimum height
+        return { ...prev, bottom: Math.max(MIN_HEIGHT_BOTTOM, newBottom) };
       });
     },
-    [onToggleBottom],
+    [collapsedPanels.bottom, onToggleBottom],
   );
 
   const toggleLeftPanel = useCallback(() => {
@@ -162,17 +146,12 @@ export function ResizableLayout({
           overflow: "hidden",
         }}
       >
-        {/* LEFT PANEL - always rendered to maintain grid structure */}
-        <div 
-          className="resizable-panel left" 
-          style={{ 
-            width: leftWidth,
-            overflow: "hidden",
-            display: leftWidth === 0 ? 'none' : 'block'
-          }}
-        >
-          {leftWidth > 0 && leftPanel}
-        </div>
+        {/* LEFT PANEL - conditionally rendered */}
+        {!collapsedPanels.left && (
+          <div className="resizable-panel left" style={{ width: leftWidth, overflow: "hidden" }}>
+            {leftPanel}
+          </div>
+        )}
 
         {/* LEFT HANDLE - always rendered */}
         <ResizeHandle onDrag={handleLeftResize} onDoubleClick={toggleLeftPanel} />
@@ -185,17 +164,12 @@ export function ResizableLayout({
         {/* RIGHT HANDLE - always rendered */}
         <ResizeHandle onDrag={handleRightResize} onDoubleClick={toggleRightPanel} />
 
-        {/* RIGHT PANEL - always rendered to maintain grid structure */}
-        <div 
-          className="resizable-panel right" 
-          style={{ 
-            width: rightWidth,
-            overflow: "hidden",
-            display: rightWidth === 0 ? 'none' : 'block'
-          }}
-        >
-          {rightWidth > 0 && rightPanel}
-        </div>
+        {/* RIGHT PANEL - conditionally rendered */}
+        {!collapsedPanels.right && (
+          <div className="resizable-panel right" style={{ width: rightWidth, overflow: "hidden" }}>
+            {rightPanel}
+          </div>
+        )}
       </div>
 
       {/* BOTTOM PANEL RESIZE HANDLE - always rendered when bottom panel exists */}
